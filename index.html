@@ -1,12 +1,10 @@
-<!DOCTYPE html>
+</html<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TODO List with Ant Design - Add New Task</title>
-    <!-- Ant Design CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd/dist/antd.min.css">
-    <!-- Custom CSS -->
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -71,32 +69,28 @@
             margin-top: 10px;
         }
         .task-table .edit-btn {
-    background-color: #1890ff;
-    color: #fff;
-    border: none;
-    padding: 8px 16px;
-    cursor: pointer;
-    margin-left: 5px; /* Adjust margin as needed */
-}
-
-.task-table .edit-btn:hover {
-    background-color: #40a9ff;
-}
-.todo-header {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.todo-header h1 {
-    font-size: 24px;
-    margin-bottom: 5px;
-}
-
-.todo-header p {
-    font-size: 14px;
-    color: #666;
-}
-
+            background-color: #1890ff;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        .task-table .edit-btn:hover {
+            background-color: #40a9ff;
+        }
+        .todo-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .todo-header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        .todo-header p {
+            font-size: 14px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -116,7 +110,7 @@
 <table class="task-table">
     <thead>
     <tr>
-        <th>Sr. No.</th> <!-- New column for serial number -->
+        <th>Sr. No.</th>
         <th>Task</th>
         <th>Priority</th>
         <th>Status</th>
@@ -125,36 +119,8 @@
         <th>Action</th>
     </tr>
     </thead>
-    <tbody>
-    <!-- Existing rows -->
-    <tr>
-        <td>1</td> <!-- Serial number -->
-        <td>Task 1</td>
-        <td>High</td>
-        <td>Not Started</td>
-        <td>2024-06-28</td>
-        <td>2024-06-30</td>
-        <td>
-            <button class="delete-btn">Delete</button>
-            <button class="edit-btn">Edit</button>
-        </td>
-    </tr>
-    <tr>
-        <td>2</td> <!-- Serial number -->
-        <td>Task 2</td>
-        <td>Normal</td>
-        <td>In Progress</td>
-        <td>2024-06-25</td>
-        <td>2024-07-02</td>
-        <td>
-            <button class="delete-btn">Delete</button>
-            <button class="edit-btn">Edit</button>
-        </td>
-    </tr>
-    <!-- Add more example rows as needed -->
+    <tbody id="taskList">
     </tbody>
-</table>
-
 </table>
 
 <table class="task-table">
@@ -197,99 +163,7 @@
     </tbody>
 </table>
 
-<!-- Ant Design JS (for functionality, not implemented in this example) -->
 <script src="https://cdn.jsdelivr.net/npm/antd/dist/antd.min.js"></script>
-<!-- Custom JavaScript (not included in this example for functionality) -->
-<script>
-    // Placeholder functions for logout and other interactions
-    function logout() {
-        alert('Logout functionality goes here.');
-    }
-
-    // Function to add a new task to the table
-function addTask() {
-// Get form input values
-var task = document.getElementById('task').value;
-var priority = document.getElementById('priority').value;
-var status = document.getElementById('status').value;
-var startDate = document.getElementById('start-date').value;
-var endDate = document.getElementById('end-date').value;
-
-// Calculate the current number of rows in the table (excluding header)
-var table = document.querySelector('.task-table tbody');
-var rowCount = table.rows.length;
-
-// Create a new row element
-var newRow = table.insertRow();
-
-// Insert cells into the new row
-var cell1 = newRow.insertCell(0);
-var cell2 = newRow.insertCell(1);
-var cell3 = newRow.insertCell(2);
-var cell4 = newRow.insertCell(3);
-var cell5 = newRow.insertCell(4);
-var cell6 = newRow.insertCell(5);
-var cell7 = newRow.insertCell(6); // New cell for action buttons
-
-// Set the serial number (Sr. No.) in the first cell
-cell1.textContent = rowCount;
-
-// Populate cells with input values
-cell2.textContent = task;
-cell3.textContent = priority;
-cell4.textContent = status;
-cell5.textContent = startDate;
-cell6.textContent = endDate;
-
-// Create delete and edit buttons for the new row
-var deleteBtn = document.createElement('button');
-deleteBtn.textContent = 'Delete';
-deleteBtn.className = 'delete-btn';
-deleteBtn.addEventListener('click', function() {
-    // Add delete functionality here if needed
-    newRow.remove(); // Remove the row when delete button is clicked
-});
-
-var editBtn = document.createElement('button');
-editBtn.textContent = 'Edit';
-editBtn.className = 'edit-btn';
-editBtn.addEventListener('click', function() {
-    // Add edit functionality here if needed
-    // Example: open a modal to edit task details
-    alert('Edit functionality goes here');
-});
-
-cell7.appendChild(deleteBtn);
-cell7.appendChild(editBtn);
-
-// Reset the form after adding the task
-document.getElementById('task').value = '';
-document.getElementById('priority').value = 'Low';
-document.getElementById('status').value = 'Not Started';
-document.getElementById('start-date').value = '';
-document.getElementById('end-date').value = '';
-}
-
-// Event listener for the Add Task button
-document.getElementById('addTaskBtn').addEventListener('click', function(event) {
-// Prevent default form submission
-event.preventDefault();
-
-// Call the addTask function to add a new task
-addTask();
-});
-
-function getCurrentDate() {
-    var now = new Date();
-    var year = now.getFullYear();
-    var month = (now.getMonth() + 1).toString().padStart(2, '0');
-    var day = now.getDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
-}
-
-// Set the current date in the span tag
-document.getElementById('currentDate').textContent = getCurrentDate();
-
-</script>
+<script src="tasks.js"></script>
 </body>
 </html>
