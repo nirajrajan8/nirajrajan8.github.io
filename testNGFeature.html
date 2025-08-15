@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Complete TestNG Features Guide</title>
+<style>
+/* Base Theme (Light) */
+:root {
+    --bg: #f8fafc;
+    --panel: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --accent: #f97316; /* Orange accent for TestNG */
+    --secondary: #2563eb;
+    --warning: #f59e0b;
+    --code-bg: #e2e8f0;
+    --border: #e5e7eb;
+    --highlight: #f1f5f9;
+}
+
+/* Dark Theme */
+.dark-mode {
+    --bg: #0f172a;
+    --panel: #111827;
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+    --accent: #f97316; /* Orange accent for TestNG */
+    --secondary: #3b82f6;
+    --warning: #f59e0b;
+    --code-bg: #0b1220;
+    --border: #1f2937;
+    --highlight: #1e293b;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Header and Navigation */
+header {
+    padding: 40px 20px;
+    border-bottom: 2px solid var(--border);
+    background: var(--panel);
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+h1 {
+    margin: 0;
+    font-size: 36px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.subtitle {
+    color: var(--muted);
+    margin-top: 8px;
+    font-size: 16px;
+}
+
+nav {
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 20px;
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+}
+
+.nav-link {
+    color: var(--muted);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    white-space: nowrap;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--accent);
+    background: var(--highlight);
+}
+
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 20px;
+}
+
+.section {
+    margin-bottom: 48px;
+}
+
+.section-header {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.section-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 0 0 8px 0;
+}
+
+.section-description {
+    color: var(--muted);
+    font-size: 16px;
+    margin: 0;
+}
+
+.feature-grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+}
+
+.feature-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(249, 115, 22, 0.1);
+}
+
+.feature-header {
+    padding: 16px 20px;
+    background: var(--highlight);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.feature-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+}
+
+.version-badge {
+    background: var(--accent);
+    color: var(--bg);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+.feature-content {
+    padding: 20px;
+}
+
+.feature-description {
+    color: var(--muted);
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.code-comparison {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.code-header {
+    padding: 8px 12px;
+    background: var(--highlight);
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.old-way { border-left: 3px solid var(--warning); }
+.new-way { border-left: 3px solid var(--accent); }
+
+pre {
+    margin: 0;
+    padding: 16px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', 'Fira Code', Consolas, 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+code {
+    color: var(--accent);
+    font-family: inherit;
+}
+
+.single-example {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.toc {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 32px;
+}
+
+.toc h2 {
+    color: var(--accent);
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+}
+
+.toc-link {
+    display: block;
+    padding: 12px 16px;
+    color: var(--text);
+    text-decoration: none;
+    background: var(--highlight);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.toc-link:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.mode-toggle {
+    background: none;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 24px;
+    transition: color 0.3s;
+}
+
+.mode-toggle:hover {
+    color: var(--accent);
+}
+
+@media (max-width: 768px) {
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .nav-container {
+        gap: 16px;
+    }
+    
+    h1 {
+        font-size: 28px;
+    }
+    
+    .section-title {
+        font-size: 24px;
+    }
+
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .mode-toggle {
+        margin-top: 20px;
+    }
+}
+</style>
+</head>
+<body class="dark-mode">
+
+<header>
+    <div class="header-content">
+        <div>
+            <h1>TestNG Framework Guide</h1>
+            <div class="subtitle">From Core Annotations to Advanced Test Suites</div>
+        </div>
+        <button id="mode-toggle" class="mode-toggle">
+            <svg id="moon-icon" width="24" height="24" viewBox="0 0 256 256" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M216.71,151.2A115.42,115.42,0,0,1,160,224c-55.6,0-100.8-45.2-100.8-100.8S104.4,22.4,160,22.4a115.42,115.42,0,0,1,64.8,11.23,8,8,0,0,1-5.59,14.65,100.75,100.75,0,0,0-5.81-1.34c-47.88-5.35-86.4,32.74-86.4,80.62C88,181.65,123.83,216,168,216a95.8,95.8,0,0,0,30.34-4.82c1.78-.6,3.58-.87,5.33-1.31a8,8,0,0,1,9.08,4.33A116.79,116.79,0,0,1,216.71,151.2Z"></path>
+            </svg>
+            <svg id="sun-icon" style="display: none;" width="24" height="24" viewBox="0 0 256 256" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M215.66,115.42,192,128l23.66,12.58a8,8,0,0,1,0,14.07l-23.66,12.58L160,186.07a8,8,0,0,1-14.07,0L133.35,160,128,192l-5.35,23.66a8,8,0,0,1-14.07,0L91.65,160,67.92,172.58a8,8,0,0,1-14.07,0L40.27,160,16.54,172.58a8,8,0,0,1-14.07,0L.27,160,24,147.42,2.34,134.83a8,8,0,0,1,0-14.07L24,115.42,2.34,102.83a8,8,0,0,1,0-14.07L24,76.58,2.34,63.93a8,8,0,0,1,0-14.07L24,51.42,2.34,38.83a8,8,0,0,1,0-14.07L24,25.42l-23.66-12.58a8,8,0,0,1,0-14.07L24,.27,36.58,24,50,0,62.58,23.66,76.58,2.34a8,8,0,0,1,14.07,0L91.65,24,105.58,2.34a8,8,0,0,1,14.07,0L128,24l5.35-23.66a8,8,0,0,1,14.07,0L164.35,24,178.28,2.34a8,8,0,0,1,14.07,0L202.35,24l12.58-23.66a8,8,0,0,1,14.07,0L240,24l-23.66,12.58a8,8,0,0,1,0,14.07L216,63.93,237.66,76.58a8,8,0,0,1,0,14.07L216,102.83,237.66,115.42Z" />
+            </svg>
+        </button>
+    </div>
+</header>
+
+<nav>
+    <div class="nav-container">
+        <a href="#annotations" class="nav-link">Annotations</a>
+        <a href="#test-suite" class="nav-link">Test Suite XML</a>
+        <a href="#parameters" class="nav-link">Parameters</a>
+        <a href="#data-provider" class="nav-link">Data Provider</a>
+        <a href="#parallel-execution" class="nav-link">Parallel Execution</a>
+    </div>
+</nav>
+
+<main>
+    <div class="toc">
+        <h2>Quick Navigation</h2>
+        <div class="toc-grid">
+            <a href="#test-annotations" class="toc-link">Test Annotations</a>
+            <a href="#suite-annotations" class="toc-link">Suite Annotations</a>
+            <a href="#xml-suite" class="toc-link">XML Suite</a>
+            <a href="#testng-parameters" class="toc-link">Parameters</a>
+            <a href="#data-provider-feature" class="toc-link">Data Provider</a>
+            <a href="#parallel-execution-feature" class="toc-link">Parallel Execution</a>
+        </div>
+    </div>
+
+    <section id="annotations" class="section">
+        <div class="section-header">
+            <h2 class="section-title">TestNG Annotations</h2>
+            <p class="section-description">The core building blocks for structuring your test code.</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card" id="test-annotations">
+                <div class="feature-header">
+                    <h3 class="feature-title">Core Annotations</h3>
+                    <span class="version-badge">TestNG</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Annotations for test methods and lifecycle hooks.</p>
+                    <div class="single-example">
+                        <div class="code-header">Test Class Example</div>
+                        <pre><code>import org.testng.annotations.Test;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.AfterMethod;
+
+public class MyTests {
+
+    @BeforeMethod
+    public void setup() {
+        System.out.println("This runs before each test method.");
+    }
+
+    @Test
+    public void testLoginFunctionality() {
+        System.out.println("Executing testLoginFunctionality.");
+        // Test logic here
+    }
+
+    @Test
+    public void testSearchFunctionality() {
+        System.out.println("Executing testSearchFunctionality.");
+        // Test logic here
+    }
+
+    @AfterMethod
+    public void teardown() {
+        System.out.println("This runs after each test method.");
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" id="suite-annotations">
+                <div class="feature-header">
+                    <h3 class="feature-title">Suite & Class Annotations</h3>
+                    <span class="version-badge">TestNG</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Used for setup and teardown at a higher level (suite or class).</p>
+                    <div class="single-example">
+                        <div class="code-header">Suite/Class Level Example</div>
+                        <pre><code>import org.testng.annotations.*;
+
+public class SuiteTest {
+
+    @BeforeSuite
+    public void beforeSuite() {
+        System.out.println("Setting up before the entire test suite.");
+    }
+
+    @BeforeClass
+    public void beforeClass() {
+        System.out.println("Setting up before any methods in this class.");
+    }
+
+    @Test
+    public void firstTest() {
+        System.out.println("Running firstTest...");
+    }
+
+    @Test
+    public void secondTest() {
+        System.out.println("Running secondTest...");
+    }
+
+    @AfterClass
+    public void afterClass() {
+        System.out.println("Cleaning up after all methods in this class.");
+    }
+
+    @AfterSuite
+    public void afterSuite() {
+        System.out.println("Cleaning up after the entire test suite.");
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="test-suite" class="section">
+        <div class="section-header">
+            <h2 class="section-title">Test Suite XML</h2>
+            <p class="section-description">A powerful way to group and configure your test runs.</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card" id="xml-suite">
+                <div class="feature-header">
+                    <h3 class="feature-title">Creating a Test Suite</h3>
+                    <span class="version-badge">TestNG</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Define which classes and methods to run, and in what order, using a `testng.xml` file.</p>
+                    <div class="single-example">
+                        <div class="code-header">Example `testng.xml`</div>
+                        <pre><code>&lt;!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" &gt;
+&lt;suite name="My Automation Suite" verbose="1" &gt;
+  &lt;test name="My Regression Tests" &gt;
+    &lt;classes&gt;
+      &lt;class name="com.example.MyTests" /&gt;
+      &lt;class name="com.example.SuiteTest" /&gt;
+    &lt;/classes&gt;
+  &lt;/test&gt;
+&lt;/suite&gt;</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="parameters" class="section">
+        <div class="section-header">
+            <h2 class="section-title">Parameters and Data-Driven Testing</h2>
+            <p class="section-description">Run the same test with different sets of data.</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card" id="testng-parameters">
+                <div class="feature-header">
+                    <h3 class="feature-title">XML Parameters</h3>
+                    <span class="version-badge">TestNG</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Passing values to test methods directly from the `testng.xml` file.</p>
+                    <div class="code-comparison">
+                        <div class="code-block old-way">
+                            <div class="code-header">Test Class (no parameters)</div>
+                            <pre><code>// No way to pass dynamic data
+@Test
+public void loginTest() {
+    String username = "user1";
+    String password = "password1";
+    // ... test logic
+}</code></pre>
+                        </div>
+                        <div class="code-block new-way">
+                            <div class="code-header">Test Class with @Parameters</div>
+                            <pre><code>// In the test class
+import org.testng.annotations.Parameters;
+
+public class ParameterTest {
+    @Test
+    @Parameters({"username", "password"})
+    public void loginTest(String username, String password) {
+        System.out.println("Username is: " + username);
+        System.out.println("Password is: " + password);
+    }
+}
+
+// In testng.xml
+&lt;suite name="Param Suite"&gt;
+    &lt;test name="Login Test"&gt;
+        &lt;parameter name="username" value="admin"/&gt;
+        &lt;parameter name="password" value="secret"/&gt;
+        &lt;classes&gt;
+            &lt;class name="com.example.ParameterTest"/&gt;
+        &lt;/classes&gt;
+    &lt;/test&gt;
+&lt;/suite&gt;</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" id="data-provider-feature">
+                <div class="feature-header">
+                    <h3 class="feature-title">Data Provider</h3>
+                    <span class="version-badge">TestNG</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">More flexible data-driven testing using a Java method to provide test data.</p>
+                    <div class="single-example">
+                        <div class="code-header">Data Provider Example</div>
+                        <pre><code>import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
+public class DataProviderTest {
+    @DataProvider(name = "loginData")
+    public Object[][] provideData() {
+        return new Object[][] {
+            {"user1", "pass1"},
+            {"user2", "pass2"}
+        };
+    }
+
+    @Test(dataProvider = "loginData")
+    public void loginTest(String username, String password) {
+        System.out.println("Testing with: " + username + " and " + password);
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="parallel-execution" class="section">
+        <div class="section-header">
+            <h2 class="section-title">Parallel Execution</h2>
+            <p class="section-description">Run tests concurrently to speed up your automation suite.</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card" id="parallel-execution-feature">
+                <div class="feature-header">
+                    <h3 class="feature-title">Configuring Parallelism</h3>
+                    <span class="version-badge">TestNG</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Use the `testng.xml` file to define how many threads and which test components should run in parallel.</p>
+                    <div class="single-example">
+                        <div class="code-header">Parallel Execution in `testng.xml`</div>
+                        <pre><code>&lt;!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" &gt;
+&lt;suite name="Parallel Suite" parallel="tests" thread-count="2"&gt;
+  &lt;test name="Browser Test - Chrome"&gt;
+    &lt;classes&gt;
+      &lt;class name="com.example.BrowserTests" /&gt;
+    &lt;/classes&gt;
+  &lt;/test&gt;
+  &lt;test name="Browser Test - Firefox"&gt;
+    &lt;classes&gt;
+      &lt;class name="com.example.BrowserTests" /&gt;
+    &lt;/classes&gt;
+  &lt;/test&gt;
+&lt;/suite&gt;</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggleButton = document.getElementById('mode-toggle');
+        const sunIcon = document.getElementById('sun-icon');
+        const moonIcon = document.getElementById('moon-icon');
+        const body = document.body;
+
+        const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (isDarkMode) {
+            body.classList.add('dark-mode');
+            sunIcon.style.display = 'block';
+            moonIcon.style.display = 'none';
+        } else {
+            sunIcon.style.display = 'none';
+            moonIcon.style.display = 'block';
+        }
+
+        toggleButton.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+            } else {
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

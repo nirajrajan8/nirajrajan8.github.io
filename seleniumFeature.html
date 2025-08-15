@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Complete Selenium Features Guide</title>
+<style>
+/* Base Theme (Light) */
+:root {
+    --bg: #f8fafc;
+    --panel: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --accent: #ef4444; /* Red accent for Selenium */
+    --secondary: #3b82f6;
+    --warning: #f59e0b;
+    --code-bg: #e2e8f0;
+    --border: #e5e7eb;
+    --highlight: #f1f5f9;
+}
+
+/* Dark Theme */
+.dark-mode {
+    --bg: #0f172a;
+    --panel: #111827;
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+    --accent: #ef4444; /* Red accent for Selenium */
+    --secondary: #60a5fa;
+    --warning: #f59e0b;
+    --code-bg: #0b1220;
+    --border: #1f2937;
+    --highlight: #1e293b;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Header and Navigation */
+header {
+    padding: 40px 20px;
+    border-bottom: 2px solid var(--border);
+    background: var(--panel);
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+h1 {
+    margin: 0;
+    font-size: 36px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.subtitle {
+    color: var(--muted);
+    margin-top: 8px;
+    font-size: 16px;
+}
+
+nav {
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 20px;
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+}
+
+.nav-link {
+    color: var(--muted);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    white-space: nowrap;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--accent);
+    background: var(--highlight);
+}
+
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 20px;
+}
+
+.section {
+    margin-bottom: 48px;
+}
+
+.section-header {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.section-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 0 0 8px 0;
+}
+
+.section-description {
+    color: var(--muted);
+    font-size: 16px;
+    margin: 0;
+}
+
+.feature-grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+}
+
+.feature-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.1);
+}
+
+.feature-header {
+    padding: 16px 20px;
+    background: var(--highlight);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.feature-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+}
+
+.version-badge {
+    background: var(--accent);
+    color: var(--bg);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+.feature-content {
+    padding: 20px;
+}
+
+.feature-description {
+    color: var(--muted);
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.code-comparison {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.code-header {
+    padding: 8px 12px;
+    background: var(--highlight);
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.old-way { border-left: 3px solid var(--warning); }
+.new-way { border-left: 3px solid var(--accent); }
+
+pre {
+    margin: 0;
+    padding: 16px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', 'Fira Code', Consolas, 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+code {
+    color: var(--accent);
+    font-family: inherit;
+}
+
+.single-example {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tip {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(96, 165, 250, 0.1));
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-top: 12px;
+    font-size: 14px;
+}
+
+.tip strong {
+    color: var(--accent);
+}
+
+.toc {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 32px;
+}
+
+.toc h2 {
+    color: var(--accent);
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+}
+
+.toc-link {
+    display: block;
+    padding: 12px 16px;
+    color: var(--text);
+    text-decoration: none;
+    background: var(--highlight);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.toc-link:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.mode-toggle {
+    background: none;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 24px;
+    transition: color 0.3s;
+}
+
+.mode-toggle:hover {
+    color: var(--accent);
+}
+
+@media (max-width: 768px) {
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .nav-container {
+        gap: 16px;
+    }
+    
+    h1 {
+        font-size: 28px;
+    }
+    
+    .section-title {
+        font-size: 24px;
+    }
+
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .mode-toggle {
+        margin-top: 20px;
+    }
+}
+</style>
+</head>
+<body class="dark-mode">
+
+<header>
+    <div class="header-content">
+        <div>
+            <h1>Modern Selenium with Java Guide</h1>
+            <div class="subtitle">From Core Concepts to Advanced Features</div>
+        </div>
+        <button id="mode-toggle" class="mode-toggle">
+            <svg id="moon-icon" width="24" height="24" viewBox="0 0 256 256" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M216.71,151.2A115.42,115.42,0,0,1,160,224c-55.6,0-100.8-45.2-100.8-100.8S104.4,22.4,160,22.4a115.42,115.42,0,0,1,64.8,11.23,8,8,0,0,1-5.59,14.65,100.75,100.75,0,0,0-5.81-1.34c-47.88-5.35-86.4,32.74-86.4,80.62C88,181.65,123.83,216,168,216a95.8,95.8,0,0,0,30.34-4.82c1.78-.6,3.58-.87,5.33-1.31a8,8,0,0,1,9.08,4.33A116.79,116.79,0,0,1,216.71,151.2Z"></path>
+            </svg>
+            <svg id="sun-icon" style="display: none;" width="24" height="24" viewBox="0 0 256 256" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M215.66,115.42,192,128l23.66,12.58a8,8,0,0,1,0,14.07l-23.66,12.58L160,186.07a8,8,0,0,1-14.07,0L133.35,160,128,192l-5.35,23.66a8,8,0,0,1-14.07,0L91.65,160,67.92,172.58a8,8,0,0,1-14.07,0L40.27,160,16.54,172.58a8,8,0,0,1-14.07,0L.27,160,24,147.42,2.34,134.83a8,8,0,0,1,0-14.07L24,115.42,2.34,102.83a8,8,0,0,1,0-14.07L24,76.58,2.34,63.93a8,8,0,0,1,0-14.07L24,51.42,2.34,38.83a8,8,0,0,1,0-14.07L24,25.42l-23.66-12.58a8,8,0,0,1,0-14.07L24,.27,36.58,24,50,0,62.58,23.66,76.58,2.34a8,8,0,0,1,14.07,0L91.65,24,105.58,2.34a8,8,0,0,1,14.07,0L128,24l5.35-23.66a8,8,0,0,1,14.07,0L164.35,24,178.28,2.34a8,8,0,0,1,14.07,0L202.35,24l12.58-23.66a8,8,0,0,1,14.07,0L240,24l-23.66,12.58a8,8,0,0,1,0,14.07L216,63.93,237.66,76.58a8,8,0,0,1,0,14.07L216,102.83,237.66,115.42Z" />
+            </svg>
+        </button>
+    </div>
+</header>
+
+<nav>
+    <div class="nav-container">
+        <a href="#setup-and-basics" class="nav-link">Setup & Basics</a>
+        <a href="#modern-driver-management" class="nav-link">Modern Driver Management</a>
+        <a href="#core-api" class="nav-link">Core API</a>
+        <a href="#advanced-interactions" class="nav-link">Advanced Interactions</a>
+        <a href="#waits-and-synchronization" class="nav-link">Waits & Synchronization</a>
+        <a href="#browser-options" class="nav-link">Browser Options</a>
+    </div>
+</nav>
+
+<main>
+    <div class="toc">
+        <h2>Quick Navigation</h2>
+        <div class="toc-grid">
+            <a href="#webdrivermanager" class="toc-link">WebDriverManager</a>
+            <a href="#service-class" class="toc-link">Service Class</a>
+            <a href="#locators" class="toc-link">Locators</a>
+            <a href="#element-interaction" class="toc-link">Element Interaction</a>
+            <a href="#actions-api" class="toc-link">Actions API</a>
+            <a href="#relative-locators" class="toc-link">Relative Locators</a>
+            <a href="#waits" class="toc-link">Waits</a>
+            <a href="#driver-options" class="toc-link">Driver Options</a>
+        </div>
+    </div>
+
+    <section id="setup-and-basics" class="section">
+        <div class="section-header">
+            <h2 class="section-title">Setup and Basic Usage</h2>
+            <p class="section-description">From manual setup to the modern, automated approach.</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card" id="webdrivermanager">
+                <div class="feature-header">
+                    <h3 class="feature-title">WebDriverManager</h3>
+                    <span class="version-badge">Third-Party Library</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Automatically downloads and configures the correct WebDriver executables.</p>
+                    <div class="code-comparison">
+                        <div class="code-block old-way">
+                            <div class="code-header">Manual Setup</div>
+                            <pre><code>System.setProperty("webdriver.chrome.driver", "/path/to/chromedriver");
+WebDriver driver = new ChromeDriver();</code></pre>
+                        </div>
+                        <div class="code-block new-way">
+                            <div class="code-header">WebDriverManager</div>
+                            <pre><code>// Add dependency to pom.xml
+// <dependency> ... </dependency>
+
+WebDriverManager.chromedriver().setup();
+WebDriver driver = new ChromeDriver();</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" id="service-class">
+                <div class="feature-header">
+                    <h3 class="feature-title">Service Class</h3>
+                    <span class="version-badge">Selenium 4+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">The modern, recommended way to configure driver executables.</p>
+                    <div class="single-example">
+                        <div class="code-header">Using the Service Class</div>
+                        <pre><code>// Using ChromeDriverService
+ChromeDriverService service = new ChromeDriverService.Builder()
+    .withLogOutput(System.out)
+    .build();
+
+WebDriver driver = new ChromeDriver(service);</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="core-api" class="section">
+        <div class="section-header">
+            <h2 class="section-title">Core API: Locators and Interactions</h2>
+            <p class="section-description">Finding elements and performing basic actions on the web page.</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card" id="locators">
+                <div class="feature-header">
+                    <h3 class="feature-title">Locators</h3>
+                    <span class="version-badge">Selenium 4+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">The core `By` class and the different strategies for finding elements.</p>
+                    <div class="single-example">
+                        <div class="code-header">Common Locators</div>
+                        <pre><code>// Finding by ID
+WebElement usernameInput = driver.findElement(By.id("username"));
+
+// Finding by CSS Selector
+WebElement loginButton = driver.findElement(By.cssSelector("button.login"));
+
+// Finding by XPath
+WebElement title = driver.findElement(By.xpath("//h1[@class='main-title']"));
+
+// Finding multiple elements
+List&lt;WebElement&gt; links = driver.findElements(By.tagName("a"));</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" id="element-interaction">
+                <div class="feature-header">
+                    <h3 class="feature-title">Element Interaction</h3>
+                    <span class="version-badge">Selenium 4+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Basic methods to interact with web elements: click, sendKeys, clear.</p>
+                    <div class="single-example">
+                        <div class="code-header">Basic Actions</div>
+                        <pre><code>// Clicks on an element
+loginButton.click();
+
+// Types text into an input field
+usernameInput.sendKeys("my_user");
+
+// Clears the text from an input field
+usernameInput.clear();
+
+// Gets text from an element
+String buttonText = loginButton.getText();
+
+// Gets an attribute value
+String href = links.get(0).getAttribute("href");</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="advanced-interactions" class="section">
+        <div class="section-header">
+            <h2 class="section-title">Advanced Interactions</h2>
+            <p class="section-description">Complex user actions like drag-and-drop, hover, and keyboard inputs.</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card" id="actions-api">
+                <div class="feature-header">
+                    <h3 class="feature-title">Actions API</h3>
+                    <span class="version-badge">Selenium 4+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Simulate complex user interactions with a fluent API.</p>
+                    <div class="single-example">
+                        <div class="code-header">Drag and Drop Example</div>
+                        <pre><code>Actions actions = new Actions(driver);
+WebElement draggable = driver.findElement(By.id("draggable"));
+WebElement droppable = driver.findElement(By.id("droppable"));
+
+actions.dragAndDrop(draggable, droppable).perform();
+
+// Chaining multiple actions
+WebElement elementToHover = driver.findElement(By.id("menu-item"));
+actions.moveToElement(elementToHover)
+       .click()
+       .sendKeys(Keys.ENTER)
+       .perform();</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" id="relative-locators">
+                <div class="feature-header">
+                    <h3 class="feature-title">Relative Locators</h3>
+                    <span class="version-badge">Selenium 4+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Find elements based on their position relative to another element on the page.</p>
+                    <div class="single-example">
+                        <div class="code-header">Relative Locators Example</div>
+                        <pre><code>// Find the element with the tag 'a' that is to the right of the login button.
+WebElement link = driver.findElement(with(By.tagName("a")).toRightOf(By.id("login-btn")));
+
+// Find the element with the tag 'input' that is above the password input.
+WebElement usernameField = driver.findElement(with(By.tagName("input")).above(By.id("password-field")));
+
+// More examples
+WebElement passwordField = driver.findElement(with(By.id("password-field")).below(usernameField));
+WebElement header = driver.findElement(with(By.tagName("h1")).near(By.id("main-div")));</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="waits-and-synchronization" class="section">
+        <div class="section-header">
+            <h2 class="section-title">Waits and Synchronization</h2>
+            <p class="section-description">Handle dynamic content and asynchronous loading gracefully.</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card" id="waits">
+                <div class="feature-header">
+                    <h3 class="feature-title">Fluent and Explicit Waits</h3>
+                    <span class="version-badge">Selenium 4+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Wait for a specific condition to be met before continuing execution.</p>
+                    <div class="code-comparison">
+                        <div class="code-block old-way">
+                            <div class="code-header">Implicit Wait</div>
+                            <pre><code>driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+// This applies globally and can be inefficient.</code></pre>
+                        </div>
+                        <div class="code-block new-way">
+                            <div class="code-header">Explicit Wait</div>
+                            <pre><code>WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("dynamic-element")));
+
+// Custom wait conditions
+Wait&lt;WebDriver&gt; fluentWait = new FluentWait&lt;WebDriver&gt;(driver)
+    .withTimeout(Duration.ofSeconds(30))
+    .pollingEvery(Duration.ofSeconds(5))
+    .ignoring(NoSuchElementException.class);
+
+WebElement foo = fluentWait.until(driver -> {
+    return driver.findElement(By.id("foo"));
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="browser-options" class="section">
+        <div class="section-header">
+            <h2 class="section-title">Browser Options</h2>
+            <p class="section-description">Customize browser behavior and capabilities.</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card" id="driver-options">
+                <div class="feature-header">
+                    <h3 class="feature-title">Chrome Options</h3>
+                    <span class="version-badge">Selenium 4+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Configure headless mode, incognito mode, and other browser settings.</p>
+                    <div class="single-example">
+                        <div class="code-header">Setting Chrome Options</div>
+                        <pre><code>ChromeOptions options = new ChromeOptions();
+options.addArguments("--headless");
+options.addArguments("--incognito");
+options.addArguments("start-maximized");
+
+// Pass options to the driver
+WebDriver driver = new ChromeDriver(options);</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggleButton = document.getElementById('mode-toggle');
+        const sunIcon = document.getElementById('sun-icon');
+        const moonIcon = document.getElementById('moon-icon');
+        const body = document.body;
+
+        const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (isDarkMode) {
+            body.classList.add('dark-mode');
+            sunIcon.style.display = 'block';
+            moonIcon.style.display = 'none';
+        } else {
+            sunIcon.style.display = 'none';
+            moonIcon.style.display = 'block';
+        }
+
+        toggleButton.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+            } else {
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

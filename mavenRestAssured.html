@@ -318,8 +318,8 @@ code {
 <header>
     <div class="header-content">
         <div>
-            <h1>Java Automation Features</h1>
-            <div class="subtitle">A Comprehensive Guide</div>
+            <h1>Maven & Rest Assured Guide</h1>
+            <div class="subtitle">From Project Management to API Testing</div>
         </div>
         <button id="mode-toggle" class="mode-toggle">
             <svg id="moon-icon" width="24" height="24" viewBox="0 0 256 256" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -334,12 +334,10 @@ code {
 
 <nav>
     <div class="nav-container">
-        <a href="index.html" class="nav-link">Home</a>
-        <a href="seleniumFeature.html" class="nav-link">Selenium</a>
-        <a href="testNGFeature.html" class="nav-link">TestNG</a>
-        <a href="appiumFeature.html" class="nav-link">Appium</a>
-        <a href="mavenRestAssured.html" class="nav-link">Maven & Rest Assured</a>
-        <a href="javaFeature.html" class="nav-link">Java Features</a>
+        <a href="#maven" class="nav-link">Maven</a>
+        <a href="#pom" class="nav-link">pom.xml</a>
+        <a href="#rest-assured" class="nav-link">Rest Assured</a>
+        <a href="#api-test" class="nav-link">API Test Example</a>
     </div>
 </nav>
 
@@ -347,20 +345,156 @@ code {
     <div class="toc">
         <h2>Quick Navigation</h2>
         <div class="toc-grid">
-            <a href="seleniumFeature.html" class="toc-link">Selenium</a>
-            <a href="testNGFeature.html" class="toc-link">TestNG</a>
-            <a href="appiumFeature.html" class="toc-link">Appium</a>
-            <a href="mavenRestAssured.html" class="toc-link">Maven & Rest Assured</a>
-            <a href="javaFeature.html" class="toc-link">Java Features</a>
+            <a href="#maven-overview" class="toc-link">Maven Overview</a>
+            <a href="#pom-xml" class="toc-link">pom.xml</a>
+            <a href="#rest-assured-overview" class="toc-link">Rest Assured Overview</a>
+            <a href="#get-request" class="toc-link">GET Request Example</a>
         </div>
     </div>
-    
-    <section class="section">
+
+    <section id="maven" class="section">
         <div class="section-header">
-            <h2 class="section-title">Welcome to the Java Automation Guide</h2>
-            <p class="section-description">A curated collection of guides on popular Java automation frameworks and tools.</p>
+            <h2 class="section-title">Maven Build Tool</h2>
+            <p class="section-description">An introduction to Maven for project management and dependency handling.</p>
         </div>
-        <p>Use the navigation menu or the links below to explore different topics.</p>
+
+        <div class="feature-grid">
+            <div class="feature-card" id="maven-overview">
+                <div class="feature-header">
+                    <h3 class="feature-title">Project Structure</h3>
+                    <span class="version-badge">Maven</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Maven enforces a standard directory layout to simplify build processes across different projects.</p>
+                    <div class="single-example">
+                        <div class="code-header">Standard Directory Layout</div>
+                        <pre><code>├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   └── resources/
+│   └── test/
+│       ├── java/
+│       └── resources/
+└── pom.xml</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" id="pom-xml">
+                <div class="feature-header">
+                    <h3 class="feature-title">pom.xml</h3>
+                    <span class="version-badge">Maven</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">The Project Object Model file (`pom.xml`) is the core of a Maven project, containing configuration and dependencies.</p>
+                    <div class="single-example">
+                        <div class="code-header">Example `pom.xml`</div>
+                        <pre><code>&lt;project&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;groupId&gt;com.example.automation&lt;/groupId&gt;
+    &lt;artifactId&gt;my-automation-project&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+
+    &lt;dependencies&gt;
+        &lt;!-- TestNG Dependency --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.testng&lt;/groupId&gt;
+            &lt;artifactId&gt;testng&lt;/artifactId&gt;
+            &lt;version&gt;7.7.1&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+
+        &lt;!-- Rest Assured Dependency --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;io.rest-assured&lt;/groupId&gt;
+            &lt;artifactId&gt;rest-assured&lt;/artifactId&gt;
+            &lt;version&gt;5.3.0&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;!-- Compiler Plugin --&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+                &lt;version&gt;3.10.1&lt;/version&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+&lt;/project&gt;</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="rest-assured" class="section">
+        <div class="section-header">
+            <h2 class="section-title">Rest Assured API Testing</h2>
+            <p class="section-description">A simple, powerful, and fluent Java library for testing REST APIs.</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card" id="rest-assured-overview">
+                <div class="feature-header">
+                    <h3 class="feature-title">Fluent Interface</h3>
+                    <span class="version-badge">Rest Assured</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Rest Assured uses a BDD (Behavior-Driven Development) style syntax (`given-when-then`) to make API tests readable and easy to write.</p>
+                    <div class="single-example">
+                        <div class="code-header">Example Syntax</div>
+                        <pre><code>given().
+        // Setup steps (headers, body, etc.)
+when().
+        // HTTP method (GET, POST, etc.)
+then().
+        // Validation steps (status code, body content)</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" id="get-request">
+                <div class="feature-header">
+                    <h3 class="feature-title">Simple GET Request</h3>
+                    <span class="version-badge">Rest Assured</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">A basic example of a GET request with status code and body validation.</p>
+                    <div class="single-example">
+                        <div class="code-header">GET Request Test</div>
+                        <pre><code>import static io.restassured.RestAssured.*;
+import static org.hamcrest.Matchers.*;
+
+import org.testng.annotations.Test;
+
+public class ApiTests {
+
+    @Test
+    public void testGetStatusCode() {
+        given()
+                .when()
+                .get("https://reqres.in/api/users/2")
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
+    public void testGetResponseBody() {
+        given()
+                .when()
+                .get("https://reqres.in/api/users/2")
+                .then()
+                .statusCode(200)
+                .body("data.first_name", equalTo("Janet"));
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 </main>
 
