@@ -1,169 +1,1149 @@
-</html<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TODO List with Ant Design - Add New Task</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd/dist/antd.min.css">
+    <title>Complete Java Modern Features Guide</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 20px;
+        /* Base Theme (Light) */
+        :root {
+            --bg: #f8fafc;
+            --panel: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --accent: #10b981;
+            --secondary: #3b82f6;
+            --warning: #f59e0b;
+            --code-bg: #e2e8f0;
+            --border: #e5e7eb;
+            --highlight: #f1f5f9;
         }
-        .header {
+
+        /* Dark Theme */
+        .dark-mode {
+            --bg: #0f172a;
+            --panel: #111827;
+            --text: #e5e7eb;
+            --muted: #9ca3af;
+            --accent: #34d399;
+            --secondary: #60a5fa;
+            --warning: #f59e0b;
+            --code-bg: #0b1220;
+            --border: #1f2937;
+            --highlight: #1e293b;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* The header and nav are now static and will scroll with the page */
+        header {
+            padding: 40px 20px;
+            border-bottom: 2px solid var(--border);
+            background: var(--panel);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
-        .header .user-info {
+
+        h1 {
+            margin: 0;
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            margin-top: 8px;
+            font-size: 16px;
+        }
+
+        nav {
+            background: var(--panel);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 20px;
             display: flex;
+            gap: 24px;
+            overflow-x: auto;
+        }
+
+        .nav-link {
+            color: var(--muted);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            white-space: nowrap;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--accent);
+            background: var(--highlight);
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 20px;
+        }
+
+        .section {
+            margin-bottom: 48px;
+        }
+
+        .section-header {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--accent);
+            margin: 0 0 8px 0;
+        }
+
+        .section-description {
+            color: var(--muted);
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .feature-grid {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        }
+
+        .feature-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 211, 153, 0.1);
+        }
+
+        .feature-header {
+            padding: 16px 20px;
+            background: var(--highlight);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
             align-items: center;
         }
-        .header .user-info img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
+
+        .feature-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+            margin: 0;
         }
-        .task-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
+
+        .version-badge {
+            background: var(--accent);
+            color: var(--bg);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: auto;
         }
-        .task-table th, .task-table td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: center;
+
+        .feature-content {
+            padding: 20px;
         }
-        .task-table th {
-            background-color: #f0f0f0;
-        }
-        .task-table tbody tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        .task-table tbody tr:hover {
-            background-color: #f1f1f1;
-        }
-        .task-table .delete-btn {
-            background-color: #ff4d4f;
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
-            cursor: pointer;
-        }
-        .task-table .delete-btn:hover {
-            background-color: #ff7875;
-        }
-        .add-task-row td {
-            border: none;
-            padding: 5px;
-        }
-        .add-task-row input, .add-task-row select {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-        }
-        .add-task-row button {
-            margin-top: 10px;
-        }
-        .task-table .edit-btn {
-            background-color: #1890ff;
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
-            cursor: pointer;
-            margin-left: 5px;
-        }
-        .task-table .edit-btn:hover {
-            background-color: #40a9ff;
-        }
-        .todo-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .todo-header h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-        .todo-header p {
+
+        .feature-description {
+            color: var(--muted);
+            margin-bottom: 16px;
             font-size: 14px;
-            color: #666;
+        }
+
+        .code-comparison {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .code-header {
+            padding: 8px 12px;
+            background: var(--highlight);
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+        }
+
+        .old-way { border-left: 3px solid var(--warning); }
+        .new-way { border-left: 3px solid var(--accent); }
+
+        pre {
+            margin: 0;
+            padding: 16px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', 'Fira Code', Consolas, 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        code {
+            color: var(--accent);
+            font-family: inherit;
+        }
+
+        .single-example {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .tip {
+            background: linear-gradient(135deg, rgba(52, 211, 153, 0.1), rgba(96, 165, 250, 0.1));
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        .tip strong {
+            color: var(--accent);
+        }
+
+        .toc {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .toc h2 {
+            color: var(--accent);
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .toc-link {
+            display: block;
+            padding: 12px 16px;
+            color: var(--text);
+            text-decoration: none;
+            background: var(--highlight);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .toc-link:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .mode-toggle {
+            background: none;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 24px;
+            transition: color 0.3s;
+        }
+
+        .mode-toggle:hover {
+            color: var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-container {
+                gap: 16px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .mode-toggle {
+                margin-top: 20px;
+            }
         }
     </style>
 </head>
-<body>
-<div class="header">
-    <div class="user-info">
-        <img src="user-profile.jpg" alt="User Profile">
-        <span>user@example.com</span>
+<body class="dark-mode"> <!-- Added dark-mode class by default -->
+
+<header>
+    <div class="header-content">
+        <div>
+            <h1>Complete Java Modern Features Guide</h1>
+            <div class="subtitle">From Java 8 to Java 21+ | Comprehensive Reference with Examples</div>
+        </div>
+        <button id="mode-toggle" class="mode-toggle">
+            <!-- Moon icon from Phosphor Icons -->
+            <svg id="moon-icon" width="24" height="24" viewBox="0 0 256 256" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M216.71,151.2A115.42,115.42,0,0,1,160,224c-55.6,0-100.8-45.2-100.8-100.8S104.4,22.4,160,22.4a115.42,115.42,0,0,1,64.8,11.23,8,8,0,0,1-5.59,14.65,100.75,100.75,0,0,0-5.81-1.34c-47.88-5.35-86.4,32.74-86.4,80.62C88,181.65,123.83,216,168,216a95.8,95.8,0,0,0,30.34-4.82c1.78-.6,3.58-.87,5.33-1.31a8,8,0,0,1,9.08,4.33A116.79,116.79,0,0,1,216.71,151.2Z"></path>
+            </svg>
+            <!-- Sun icon - initially hidden -->
+            <svg id="sun-icon" style="display: none;" width="24" height="24" viewBox="0 0 256 256" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M215.66,115.42,192,128l23.66,12.58a8,8,0,0,1,0,14.07l-23.66,12.58L160,186.07a8,8,0,0,1-14.07,0L133.35,160,128,192l-5.35,23.66a8,8,0,0,1-14.07,0L91.65,160,67.92,172.58a8,8,0,0,1-14.07,0L40.27,160,16.54,172.58a8,8,0,0,1-14.07,0L.27,160,24,147.42,2.34,134.83a8,8,0,0,1,0-14.07L24,115.42,2.34,102.83a8,8,0,0,1,0-14.07L24,76.58,2.34,63.93a8,8,0,0,1,0-14.07L24,51.42,2.34,38.83a8,8,0,0,1,0-14.07L24,25.42l-23.66-12.58a8,8,0,0,1,0-14.07L24,.27,36.58,24,50,0,62.58,23.66,76.58,2.34a8,8,0,0,1,14.07,0L91.65,24,105.58,2.34a8,8,0,0,1,14.07,0L128,24l5.35-23.66a8,8,0,0,1,14.07,0L164.35,24,178.28,2.34a8,8,0,0,1,14.07,0L202.35,24l12.58-23.66a8,8,0,0,1,14.07,0L240,24l-23.66,12.58a8,8,0,0,1,0,14.07L216,63.93,237.66,76.58a8,8,0,0,1,0,14.07L216,102.83,237.66,115.42Z" />
+            </svg>
+        </button>
     </div>
-    <button class="ant-btn" onclick="logout()">Logout</button>
-</div>
+</header>
 
-<div class="todo-header">
-    <h1>TODO List</h1>
-    <p>Current Date: <span id="currentDate"></span></p>
-</div>
+<nav>
+    <div class="nav-container">
+        <a href="#java8-core" class="nav-link">Java 8 Core</a>
+        <a href="#functional" class="nav-link">Functional Programming</a>
+        <a href="#method-references" class="nav-link">Method References</a>
+        <a href="#streams" class="nav-link">Streams & Collections</a>
+        <a href="#async" class="nav-link">Async Programming</a>
+        <a href="#modern-features" class="nav-link">Modern Java (9-21+)</a>
+    </div>
+</nav>
 
-<table class="task-table">
-    <thead>
-    <tr>
-        <th>Sr. No.</th>
-        <th>Task</th>
-        <th>Priority</th>
-        <th>Status</th>
-        <th>Start Date</th>
-        <th>End Date</th>
-        <th>Action</th>
-    </tr>
-    </thead>
-    <tbody id="taskList">
-    </tbody>
-</table>
+<main>
+    <div class="toc">
+        <h2>Quick Navigation</h2>
+        <div class="toc-grid">
+            <a href="#lambda-expressions" class="toc-link">Lambda Expressions</a>
+            <a href="#functional-interfaces" class="toc-link">Functional Interfaces</a>
+            <a href="#method-references-section" class="toc-link">Method References</a>
+            <a href="#streams-api" class="toc-link">Streams API</a>
+            <a href="#optional" class="toc-link">Optional</a>
+            <a href="#datetime" class="toc-link">Date & Time API</a>
+            <a href="#completablefuture" class="toc-link">CompletableFuture</a>
+            <a href="#var-inference" class="toc-link">Type Inference (var)</a>
+            <a href="#text-blocks" class="toc-link">Text Blocks</a>
+            <a href="#records" class="toc-link">Records</a>
+            <a href="#pattern-matching" class="toc-link">Pattern Matching</a>
+            <a href="#switch-expressions" class="toc-link">Switch Expressions</a>
+        </div>
+    </div>
 
-<table class="task-table">
-    <thead>
-    <tr>
-        <th colspan="6">Add New Task</th>
-    </tr>
-    </thead>
-    <tbody class="add-task-row">
-    <tr>
-        <td>Task:</td>
-        <td><input type="text" id="task" name="task" required></td>
-        <td>Priority:</td>
-        <td>
-            <select id="priority" name="priority" required>
-                <option value="Low">Low</option>
-                <option value="Normal">Normal</option>
-                <option value="High">High</option>
-            </select>
-        </td>
-        <td>Status:</td>
-        <td>
-            <select id="status" name="status" required>
-                <option value="Not Started">Not Started</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Complete">Complete</option>
-            </select>
-        </td>
-    </tr>
-    <tr>
-        <td>Start Date:</td>
-        <td><input type="date" id="start-date" name="start-date" required></td>
-        <td>End Date:</td>
-        <td><input type="date" id="end-date" name="end-date" required></td>
-        <td colspan="2" style="text-align: center;">
-            <button type="submit" class="ant-btn ant-btn-primary" id="addTaskBtn">Add Task</button>
-            <button type="reset" class="ant-btn">Reset</button>
-        </td>
-    </tr>
-    </tbody>
-</table>
+    <section id="java8-core" class="section">
+        <div class="section-header">
+            <h2 class="section-title">Java 8 Foundation Features</h2>
+            <p class="section-description">The revolutionary features that transformed Java programming</p>
+        </div>
 
-<script src="https://cdn.jsdelivr.net/npm/antd/dist/antd.min.js"></script>
-<script src="https://nirajrajan8.github.io/tasks.js"></script>
+        <div class="feature-grid">
+            <div class="feature-card" id="lambda-expressions">
+                <div class="feature-header">
+                    <h3 class="feature-title">Lambda Expressions</h3>
+                    <span class="version-badge">Java 8+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Concise way to represent anonymous functions. Perfect for callbacks and functional programming.</p>
+                    <div class="code-comparison">
+                        <div class="code-block old-way">
+                            <div class="code-header">Pre-Java 8 (Anonymous Class)</div>
+                            <pre><code>List&lt;String&gt; names = Arrays.asList("Alice", "Bob", "Charlie");
+Collections.sort(names, new Comparator&lt;String&gt;() {
+    public int compare(String a, String b) {
+        return a.compareTo(b);
+    }
+});</code></pre>
+                        </div>
+                        <div class="code-block new-way">
+                            <div class="code-header">Java 8+ (Lambda)</div>
+                            <pre><code>List&lt;String&gt; names = Arrays.asList("Alice", "Bob", "Charlie");
+names.sort((a, b) -&gt; a.compareTo(b));
+// Even shorter:
+names.sort(String::compareTo);</code></pre>
+                        </div>
+                    </div>
+                    <div class="tip">
+                        <strong>Pro Tip:</strong> Use lambdas for short, one-time operations. For reusable logic, consider method references or separate methods.
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3 class="feature-title">Streams API</h3>
+                    <span class="version-badge">Java 8+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Functional-style operations on collections. Chain filter, map, reduce operations elegantly.</p>
+                    <div class="code-comparison">
+                        <div class="code-block old-way">
+                            <div class="code-header">Traditional Approach</div>
+                            <pre><code>List&lt;String&gt; result = new ArrayList&lt;&gt;();
+for (String name : names) {
+    if (name.startsWith("A")) {
+        result.add(name.toUpperCase());
+    }
+}</code></pre>
+                        </div>
+                        <div class="code-block new-way">
+                            <div class="code-header">Streams Approach</div>
+                            <pre><code>List&lt;String&gt; result = names.stream()
+    .filter(name -&gt; name.startsWith("A"))
+    .map(String::toUpperCase)
+    .collect(Collectors.toList());</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="functional" class="section">
+        <div class="section-header">
+            <h2 class="section-title">Functional Programming</h2>
+            <p class="section-description">Built-in functional interfaces and programming patterns</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card" id="functional-interfaces">
+                <div class="feature-header">
+                    <h3 class="feature-title">Built-in Functional Interfaces</h3>
+                    <span class="version-badge">Java 8+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Pre-defined interfaces for common functional patterns: Consumer, Predicate, Function, Supplier.</p>
+                    <div class="single-example">
+                        <div class="code-header">Common Functional Interfaces</div>
+                        <pre><code>// Consumer&lt;T&gt; - accepts input, returns nothing
+Consumer&lt;String&gt; printer = System.out::println;
+names.forEach(printer);
+
+// Predicate&lt;T&gt; - tests a condition, returns boolean
+Predicate&lt;Integer&gt; isEven = n -&gt; n % 2 == 0;
+numbers.stream().filter(isEven).forEach(System.out::println);
+
+// Function&lt;T,R&gt; - transforms T to R
+Function&lt;String, Integer&gt; lengthGetter = String::length;
+names.stream().map(lengthGetter).forEach(System.out::println);
+
+// Supplier&lt;T&gt; - provides a value
+Supplier&lt;String&gt; dataSupplier = () -&gt; "Expensive computation";
+String data = dataSupplier.get();</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3 class="feature-title">Advanced Functional Interfaces</h3>
+                    <span class="version-badge">Java 8+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Specialized interfaces for multiple parameters and type-specific operations.</p>
+                    <div class="single-example">
+                        <div class="code-header">Advanced Examples</div>
+                        <pre><code>// BiFunction&lt;T,U,R&gt; - takes two arguments, returns result
+BiFunction&lt;Integer, Integer, String&gt; sumToString =
+    (a, b) -&gt; "Sum: " + (a + b);
+
+// UnaryOperator&lt;T&gt; - operates on single argument of same type
+UnaryOperator&lt;String&gt; toUpper = String::toUpperCase;
+
+// BinaryOperator&lt;T&gt; - operates on two arguments of same type
+BinaryOperator&lt;Integer&gt; multiply = (x, y) -&gt; x * y;
+
+// Function chaining
+Function&lt;Integer, Integer&gt; times2 = x -&gt; x * 2;
+Function&lt;Integer, Integer&gt; plus3 = x -&gt; x + 3;
+System.out.println(times2.andThen(plus3).apply(5)); // 13</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3 class="feature-title">Custom Functional Interfaces</h3>
+                    <span class="version-badge">Java 8+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Create your own functional interfaces with @FunctionalInterface annotation.</p>
+                    <div class="single-example">
+                        <div class="code-header">Custom Interface Example</div>
+                        <pre><code>@FunctionalInterface
+interface Calculator {
+    int calculate(int a, int b);
+
+    // Default methods allowed
+    default int square(int a) {
+        return calculate(a, a);
+    }
+}
+
+// Usage
+Calculator addition = (a, b) -&gt; a + b;
+Calculator multiplication = (x, y) -&gt; x * y;
+
+System.out.println(addition.calculate(5, 3)); // 8
+System.out.println(multiplication.square(4)); // 16</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="method-references" class="section">
+        <div class="section-header">
+            <h2 class="section-title">Method References</h2>
+            <p class="section-description">Shorthand syntax for lambdas that call existing methods</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card" id="method-references-section">
+                <div class="feature-header">
+                    <h3 class="feature-title">Four Types of Method References</h3>
+                    <span class="version-badge">Java 8+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Static methods, instance methods, arbitrary object methods, and constructors.</p>
+                    <div class="single-example">
+                        <div class="code-header">All Method Reference Types</div>
+                        <pre><code>// 1. Static method reference
+List&lt;Integer&gt; numbers = Arrays.asList(3, 1, 4, 1, 5);
+numbers.stream().map(String::valueOf).forEach(System.out::println);
+
+// 2. Instance method reference (specific object)
+StringBuilder sb = new StringBuilder();
+List&lt;String&gt; words = Arrays.asList("Hello", " ", "World");
+words.forEach(sb::append);
+
+// 3. Instance method reference (arbitrary object)
+List&lt;String&gt; names = Arrays.asList("Alice", "Bob", "Charlie");
+names.stream().map(String::toUpperCase).forEach(System.out::println);
+
+// 4. Constructor reference
+List&lt;String&gt; nameList = Arrays.asList("Alice", "Bob");
+List&lt;Person&gt; people = nameList.stream()
+    .map(Person::new)
+    .collect(Collectors.toList());</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3 class="feature-title">Array Constructor References</h3>
+                    <span class="version-badge">Java 8+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Special syntax for creating arrays from streams.</p>
+                    <div class="single-example">
+                        <div class="code-header">Array Creation</div>
+                        <pre><code>// Convert stream to array using constructor reference
+String[] array = Stream.of("A", "B", "C")
+    .toArray(String[]::new);
+
+// Equivalent lambda expression
+String[] arrayLambda = Stream.of("A", "B", "C")
+    .toArray(size -&gt; new String[size]);</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="streams" class="section">
+        <div class="section-header">
+            <h2 class="section-title">Streams & Collections</h2>
+            <p class="section-description">Advanced stream operations and collection enhancements</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card" id="streams-api">
+                <div class="feature-header">
+                    <h3 class="feature-title">Stream Operations</h3>
+                    <span class="version-badge">Java 8+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Comprehensive guide to intermediate and terminal operations.</p>
+                    <div class="single-example">
+                        <div class="code-header">Stream Pipeline Examples</div>
+                        <pre><code>List&lt;String&gt; words = Arrays.asList("apple", "banana", "cherry", "date");
+
+// Complex pipeline
+Map&lt;Integer, List&lt;String&gt;&gt; groupedByLength = words.stream()
+    .filter(word -&gt; word.length() &gt; 4)
+    .map(String::toUpperCase)
+    .collect(Collectors.groupingBy(String::length));
+
+// Parallel processing
+int sum = IntStream.range(1, 1000000)
+    .parallel()
+    .filter(n -&gt; n % 2 == 0)
+    .sum();
+
+// FlatMap for nested collections
+List&lt;List&lt;String&gt;&gt; nested = Arrays.asList(
+    Arrays.asList("a", "b"),
+    Arrays.asList("c", "d")
+);
+List&lt;String&gt; flattened = nested.stream()
+    .flatMap(List::stream)
+    .collect(Collectors.toList());</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" id="optional">
+                <div class="feature-header">
+                    <h3 class="feature-title">Optional</h3>
+                    <span class="version-badge">Java 8+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">A container object to handle potential null values gracefully.</p>
+                    <div class="code-comparison">
+                        <div class="code-block old-way">
+                            <div class="code-header">Traditional Null Check</div>
+                            <pre><code>String name = findNameById(123);
+if (name != null) {
+    System.out.println(name.toUpperCase());
+} else {
+    System.out.println("Name not found");
+}</code></pre>
+                        </div>
+                        <div class="code-block new-way">
+                            <div class="code-header">Optional Approach</div>
+                            <pre><code>Optional&lt;String&gt; name = findNameById(123);
+name.ifPresentOrElse(
+    s -&gt; System.out.println(s.toUpperCase()),
+    () -&gt; System.out.println("Name not found")
+);</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="async" class="section">
+        <div class="section-header">
+            <h2 class="section-title">Asynchronous Programming</h2>
+            <p class="section-description">Modern tools for parallel and concurrent tasks</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card" id="completablefuture">
+                <div class="feature-header">
+                    <h3 class="feature-title">CompletableFuture</h3>
+                    <span class="version-badge">Java 8+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">A powerful API for asynchronous programming, chaining dependent tasks and handling results.</p>
+                    <div class="single-example">
+                        <div class="code-header">Async Task Chaining</div>
+                        <pre><code>CompletableFuture&lt;String&gt; future = CompletableFuture.supplyAsync(() -&gt; {
+    // Simulate long-running task
+    try { Thread.sleep(1000); } catch (InterruptedException e) {}
+    return "Hello";
+});
+
+future.thenApply(s -&gt; s + " World")
+      .thenAccept(System.out::println)
+      .join(); // Wait for completion</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="modern-features" class="section">
+        <div class="section-header">
+            <h2 class="section-title">Modern Java (Java 9+)</h2>
+            <p class="section-description">Evolving the language with major and minor feature releases</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card" id="var-inference">
+                <div class="feature-header">
+                    <h3 class="feature-title">Local Variable Type Inference (var)</h3>
+                    <span class="version-badge">Java 10+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Reduces boilerplate by inferring local variable types from the initializer.</p>
+                    <div class="code-comparison">
+                        <div class="code-block old-way">
+                            <div class="code-header">Old Way</div>
+                            <pre><code>Map&lt;String, List&lt;Integer&gt;&gt; complexMap = new HashMap&lt;&gt;();
+WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));</code></pre>
+                        </div>
+                        <div class="code-block new-way">
+                            <div class="code-header">Type Inference</div>
+                            <pre><code>var complexMap = new HashMap&lt;String, List&lt;Integer&gt;&gt;();
+var wait = new WebDriverWait(driver, Duration.ofSeconds(10));</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" id="text-blocks">
+                <div class="feature-header">
+                    <h3 class="feature-title">Text Blocks</h3>
+                    <span class="version-badge">Java 15+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Multi-line string literals with natural formatting, perfect for JSON, SQL, HTML.</p>
+                    <div class="code-comparison">
+                        <div class="code-block old-way">
+                            <div class="code-header">String Concatenation</div>
+                            <pre><code>String json = "{\n" +
+              "  \"name\": \"John\",\n" +
+              "  \"age\": 30,\n" +
+              "  \"city\": \"New York\"\n" +
+              "}";</code></pre>
+                        </div>
+                        <div class="code-block new-way">
+                            <div class="code-header">Text Blocks</div>
+                            <pre><code>String json = """
+{
+  "name": "John",
+  "age": 30,
+  "city": "New York"
+}""";</code></pre>
+                        </div>
+                    </div>
+                    <div class="tip">
+                        <strong>Pro Tip:</strong> Text blocks handle newlines and indentation automatically. The compiler infers the base indentation from the final triple quote's position.
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" id="records">
+                <div class="feature-header">
+                    <h3 class="feature-title">Records</h3>
+                    <span class="version-badge">Java 16+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Compact, immutable data carrier classes that automatically generate boilerplate code.</p>
+                    <div class="code-comparison">
+                        <div class="code-block old-way">
+                            <div class="code-header">Traditional POJO</div>
+                            <pre><code>public class Point {
+    private final int x;
+    private final int y;
+
+    public Point(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public int getX() { return x; }
+    public int getY() { return y; }
+    // equals(), hashCode(), toString() methods here...
+}</code></pre>
+                        </div>
+                        <div class="code-block new-way">
+                            <div class="code-header">Record</div>
+                            <pre><code>public record Point(int x, int y) {}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" id="pattern-matching">
+                <div class="feature-header">
+                    <h3 class="feature-title">Pattern Matching for instanceof</h3>
+                    <span class="version-badge">Java 16+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Eliminates the need for explicit casting after an instanceof check.</p>
+                    <div class="code-comparison">
+                        <div class="code-block old-way">
+                            <div class="code-header">Old instanceof Check</div>
+                            <pre><code>Object obj = "Hello World";
+if (obj instanceof String) {
+    String s = (String) obj;
+    System.out.println(s.length());
+}</code></pre>
+                        </div>
+                        <div class="code-block new-way">
+                            <div class="code-header">Pattern Matching</div>
+                            <pre><code>Object obj = "Hello World";
+if (obj instanceof String s) {
+    System.out.println(s.length());
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" id="switch-expressions">
+                <div class="feature-header">
+                    <h3 class="feature-title">Switch Expressions</h3>
+                    <span class="version-badge">Java 14+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Switch can now be used as an expression that returns a value, with a new `->` syntax.</p>
+                    <div class="code-comparison">
+                        <div class="code-block old-way">
+                            <div class="code-header">Old Switch Statement</div>
+                            <pre><code>String dayType;
+switch (day) {
+    case "MONDAY":
+    case "FRIDAY":
+        dayType = "Partial";
+        break;
+    case "SATURDAY":
+    case "SUNDAY":
+        dayType = "Weekend";
+        break;
+    default:
+        dayType = "Weekday";
+        break;
+}</code></pre>
+                        </div>
+                        <div class="code-block new-way">
+                            <div class="code-header">Switch Expression</div>
+                            <pre><code>String dayType = switch (day) {
+    case "MONDAY", "FRIDAY" -> "Partial";
+    case "SATURDAY", "SUNDAY" -> "Weekend";
+    default -> "Weekday";
+};</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3 class="feature-title">Sealed Classes</h3>
+                    <span class="version-badge">Java 17+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">A class or interface can now specify which other classes or interfaces may extend or implement it.</p>
+                    <div class="single-example">
+                        <div class="code-header">Sealed Class Example</div>
+                        <pre><code>// Define a sealed interface that only a few types can implement
+public sealed interface Shape permits Circle, Square, Rectangle {}
+
+// The implementing classes must be final, sealed, or non-sealed
+public final class Circle implements Shape {}
+public final class Square implements Shape {}
+public final class Rectangle implements Shape {}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3 class="feature-title">HTTP Client API</h3>
+                    <span class="version-badge">Java 11+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">A modern, fluent, and non-blocking API for making HTTP requests.</p>
+                    <div class="single-example">
+                        <div class="code-header">HTTP GET Request</div>
+                        <pre><code>// Asynchronous HTTP GET request
+HttpClient client = HttpClient.newHttpClient();
+HttpRequest request = HttpRequest.newBuilder()
+    .uri(URI.create("https://httpbin.org/get"))
+    .build();
+
+client.sendAsync(request, BodyHandlers.ofString())
+    .thenApply(HttpResponse::body)
+    .thenAccept(System.out::println);</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card" id="datetime">
+                <div class="feature-header">
+                    <h3 class="feature-title">Date & Time API (java.time)</h3>
+                    <span class="version-badge">Java 8+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">A new, immutable, and thread-safe API to replace the old `java.util.Date` and `Calendar` classes.</p>
+                    <div class="single-example">
+                        <div class="code-header">Date & Time Examples</div>
+                        <pre><code>// Current date and time
+LocalDate today = LocalDate.now();
+LocalTime now = LocalTime.now();
+LocalDateTime current = LocalDateTime.now();
+
+// Creating specific dates
+LocalDate christmas = LocalDate.of(2025, 12, 25);
+LocalTime dinnerTime = LocalTime.of(19, 30);
+
+// Calculating durations
+Period untilChristmas = today.until(christmas);
+System.out.println(untilChristmas.getMonths() + " months, " + untilChristmas.getDays() + " days");
+
+// Zoned time
+ZonedDateTime zoned = ZonedDateTime.now(ZoneId.of("America/New_York"));</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3 class="feature-title">Enhanced Map API</h3>
+                    <span class="version-badge">Java 8+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">New utility methods for common map operations, simplifying code and improving performance.</p>
+                    <div class="single-example">
+                        <div class="code-header">Map API Examples</div>
+                        <pre><code>Map&lt;String, Integer&gt; map = new HashMap&lt;&gt;();
+map.put("A", 1);
+map.put("B", 2);
+
+// getOrDefault
+int value = map.getOrDefault("C", 0); // returns 0
+
+// computeIfAbsent
+map.computeIfAbsent("C", key -> 3); // adds "C":3
+
+// merge
+map.merge("A", 1, (oldVal, newVal) -> oldVal + newVal); // "A" becomes 2</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3 class="feature-title">Base64 Encoding/Decoding</h3>
+                    <span class="version-badge">Java 8+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">The `java.util.Base64` class provides a standard way to encode and decode Base64 data.</p>
+                    <div class="single-example">
+                        <div class="code-header">Base64 Example</div>
+                        <pre><code>String original = "Java is great!";
+String encoded = Base64.getEncoder().encodeToString(original.getBytes());
+byte[] decodedBytes = Base64.getDecoder().decode(encoded);
+String decoded = new String(decodedBytes);</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3 class="feature-title">StringJoiner</h3>
+                    <span class="version-badge">Java 8+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">A utility class for constructing a sequence of characters separated by a delimiter.</p>
+                    <div class="single-example">
+                        <div class="code-header">StringJoiner Example</div>
+                        <pre><code>StringJoiner sj = new StringJoiner(", ", "{", "}");
+sj.add("apple").add("banana").add("cherry");
+System.out.println(sj.toString()); // {apple, banana, cherry}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3 class="feature-title">Files API Enhancements</h3>
+                    <span class="version-badge">Java 8+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">New methods in `java.nio.file.Files` for easier file and directory operations.</p>
+                    <div class="single-example">
+                        <div class="code-header">Files API Examples</div>
+                        <pre><code>// Read all lines from a file as a Stream
+try (Stream&lt;String&gt; lines = Files.lines(Paths.get("myfile.txt"))) {
+    lines.forEach(System.out::println);
+}
+
+// Walk a file tree and process files
+Files.walk(Paths.get("."))
+    .filter(Files::isRegularFile)
+    .forEach(System.out::println);</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3 class="feature-title">Stream Enhancements</h3>
+                    <span class="version-badge">Java 9+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">New methods `takeWhile`, `dropWhile`, `ofNullable`, and `iterate` for more powerful stream creation and manipulation.</p>
+                    <div class="single-example">
+                        <div class="code-header">Stream Enhancements Examples</div>
+                        <pre><code>// takeWhile: takes elements until a condition is no longer met
+Stream.of(1, 2, 3, 4, 3, 2, 1).takeWhile(n -> n < 4).forEach(System.out::println); // Prints 1, 2, 3
+
+// dropWhile: drops elements while a condition is met
+Stream.of(1, 2, 3, 4, 3, 2, 1).dropWhile(n -> n < 4).forEach(System.out::println); // Prints 4, 3, 2, 1
+
+// iterate: allows for custom stream iteration
+Stream.iterate(1, n -> n < 10, n -> n * 2).forEach(System.out::println); // Prints 1, 2, 4, 8</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3 class="feature-title">Collection Factory Methods</h3>
+                    <span class="version-badge">Java 9+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Convenience methods to create small, unmodifiable collections.</p>
+                    <div class="single-example">
+                        <div class="code-header">Collection Factory Examples</div>
+                        <pre><code>// Unmodifiable List, Set, and Map
+List&lt;String&gt; list = List.of("A", "B", "C");
+Set&lt;Integer&gt; set = Set.of(1, 2, 3);
+Map&lt;String, Integer&gt; map = Map.of("A", 1, "B", 2);
+
+// Throws UnsupportedOperationException if modified
+// list.add("D"); </code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3 class="feature-title">Try-with-Resources Improvements</h3>
+                    <span class="version-badge">Java 9+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">The resource variable in `try-with-resources` can now be a final or effectively final variable already in scope.</p>
+                    <div class="code-comparison">
+                        <div class="code-block old-way">
+                            <div class="code-header">Old Syntax</div>
+                            <pre><code>BufferedReader reader = new BufferedReader(new FileReader("file.txt"));
+try (BufferedReader r = reader) {
+    System.out.println(r.readLine());
+}</code></pre>
+                        </div>
+                        <div class="code-block new-way">
+                            <div class="code-header">Enhanced Syntax</div>
+                            <pre><code>BufferedReader reader = new BufferedReader(new FileReader("file.txt"));
+try (reader) {
+    System.out.println(reader.readLine());
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3 class="feature-title">Interface Default & Static Methods</h3>
+                    <span class="version-badge">Java 8+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Interfaces can now contain method implementations, which can be `default` or `static`.</p>
+                    <div class="single-example">
+                        <div class="code-header">Interface Methods Example</div>
+                        <pre><code>interface Vehicle {
+    void drive(); // abstract method
+
+    // default method with implementation
+    default void honk() {
+        System.out.println("Beep!");
+    }
+
+    // static method
+    static int getWheelCount() {
+        return 4;
+    }
+}
+
+// Implementation of abstract method
+class Car implements Vehicle {
+    @Override
+    public void drive() {
+        System.out.println("Driving a car");
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggleButton = document.getElementById('mode-toggle');
+        const sunIcon = document.getElementById('sun-icon');
+        const moonIcon = document.getElementById('moon-icon');
+        const body = document.body;
+
+        const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (isDarkMode) {
+            body.classList.add('dark-mode');
+            sunIcon.style.display = 'block';
+            moonIcon.style.display = 'none';
+        } else {
+            sunIcon.style.display = 'none';
+            moonIcon.style.display = 'block';
+        }
+
+        toggleButton.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+            } else {
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            }
+        });
+    });
+</script>
+
 </body>
 </html>
+
