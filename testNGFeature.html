@@ -368,37 +368,245 @@ code {
                     <span class="version-badge">TestNG</span>
                 </div>
                 <div class="feature-content">
-                    <p class="feature-description">Annotations for test methods and lifecycle hooks.</p>
+                    <p class="feature-description">TestNG annotations provide a powerful way to control test execution lifecycle. They define setup, teardown, and test execution order, enabling structured and maintainable test automation frameworks.</p>
+                    
                     <div class="single-example">
-                        <div class="code-header">Test Class Example</div>
-                        <pre><code>import org.testng.annotations.Test;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.AfterMethod;
+                        <div class="code-header">Annotation Execution Hierarchy</div>
+                        <pre><code>// EXECUTION ORDER (from outermost to innermost scope):
+// 1. @BeforeSuite     - Once per entire test suite
+// 2. @BeforeTest      - Once per &lt;test&gt; tag in testng.xml  
+// 3. @BeforeClass     - Once per test class
+// 4. @BeforeMethod    - Before each @Test method
+// 5. @Test            - The actual test method
+// 6. @AfterMethod     - After each @Test method
+// 7. @AfterClass      - Once after all methods in class
+// 8. @AfterTest       - Once after all &lt;test&gt; tag methods
+// 9. @AfterSuite      - Once after entire test suite
 
-public class MyTests {
+// Example execution flow for 2 test methods:
+// BeforeSuite → BeforeTest → BeforeClass → 
+// BeforeMethod → Test1 → AfterMethod → 
+// BeforeMethod → Test2 → AfterMethod → 
+// AfterClass → AfterTest → AfterSuite</code></pre>
+                    </div>
 
+                    <div class="single-example">
+                        <div class="code-header">Complete Selenium Test Example</div>
+                        <pre><code>import org.testng.annotations.*;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.By;
+import org.testng.Assert;
+
+public class LoginTestSuite {
+    private WebDriver driver;
+    private String baseUrl;
+    
+    @BeforeSuite
+    public void suiteSetup() {
+        System.out.println("=== SUITE SETUP ===");
+        // Global configuration - runs once for entire test execution
+        System.setProperty("webdriver.chrome.driver", "path/to/chromedriver");
+        baseUrl = "https://example.com";
+        // Setup test data, database connections, etc.
+    }
+    
+    @BeforeTest  
+    public void testSetup() {
+        System.out.println("=== TEST SETUP ===");
+        // Configuration for this specific &lt;test&gt; group in testng.xml
+        // Could configure environment-specific settings
+    }
+    
+    @BeforeClass
+    public void classSetup() {
+        System.out.println("=== CLASS SETUP ===");
+        // Setup for all methods in this class
+        driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+    }
+    
     @BeforeMethod
-    public void setup() {
-        System.out.println("This runs before each test method.");
+    public void methodSetup() {
+        System.out.println("=== METHOD SETUP ===");
+        // Fresh state for each test method
+        driver.get(baseUrl + "/login");
+        driver.manage().deleteAllCookies(); // Clear session
     }
-
-    @Test
-    public void testLoginFunctionality() {
-        System.out.println("Executing testLoginFunctionality.");
-        // Test logic here
+    
+    @Test(priority = 1, groups = {"smoke", "login"})
+    public void testValidLogin() {
+        System.out.println("Executing: Valid Login Test");
+        
+        driver.findElement(By.id("username")).sendKeys("testuser");
+        driver.findElement(By.id("password")).sendKeys("password123");
+        driver.findElement(By.id("login-btn")).click();
+        
+        // Verify successful login
+        String welcomeText = driver.findElement(By.id("welcome")).getText();
+        Assert.assertTrue(welcomeText.contains("Welcome"), "Login failed");
     }
-
-    @Test
-    public void testSearchFunctionality() {
-        System.out.println("Executing testSearchFunctionality.");
-        // Test logic here
+    
+    @Test(priority = 2, groups = {"regression", "login"})
+    public void testInvalidLogin() {
+        System.out.println("Executing: Invalid Login Test");
+        
+        driver.findElement(By.id("username")).sendKeys("invalid");
+        driver.findElement(By.id("password")).sendKeys("wrong");
+        driver.findElement(By.id("login-btn")).click();
+        
+        // Verify error message
+        String errorText = driver.findElement(By.id("error")).getText();
+        Assert.assertTrue(errorText.contains("Invalid"), "Error message not shown");
     }
-
+    
     @AfterMethod
-    public void teardown() {
-        System.out.println("This runs after each test method.");
+    public void methodCleanup() {
+        System.out.println("=== METHOD CLEANUP ===");
+        // Cleanup after each test method
+        // Take screenshot on failure, logout if needed
+        if (isUserLoggedIn()) {
+            driver.findElement(By.id("logout")).click();
+        }
+    }
+    
+    @AfterClass
+    public void classCleanup() {
+        System.out.println("=== CLASS CLEANUP ===");
+        // Cleanup for this class
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+    
+    @AfterTest
+    public void testCleanup() {
+        System.out.println("=== TEST CLEANUP ===");
+        // Cleanup for this &lt;test&gt; group
+    }
+    
+    @AfterSuite
+    public void suiteCleanup() {
+        System.out.println("=== SUITE CLEANUP ===");
+        // Global cleanup - generate reports, send notifications
+        generateTestReport();
+    }
+    
+    // Helper methods
+    private boolean isUserLoggedIn() {
+        try {
+            return driver.findElement(By.id("logout")).isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    private void generateTestReport() {
+        // Implementation for generating test reports
     }
 }</code></pre>
+                    </div>
+
+                    <div class="single-example">
+                        <div class="code-header">Advanced Annotation Attributes</div>
+                        <pre><code>public class AdvancedTestNGFeatures {
+    
+    // TEST ANNOTATION WITH ATTRIBUTES
+    @Test(
+        priority = 1,                           // Execution order (lower = earlier)
+        enabled = true,                         // Enable/disable test
+        timeOut = 5000,                        // Timeout in milliseconds
+        description = "Verify user login functionality", // Test description
+        groups = {"smoke", "regression", "api"}, // Test grouping
+        dependsOnMethods = {"setupUser"},       // Method dependencies
+        dependsOnGroups = {"database"},         // Group dependencies
+        expectedExceptions = IllegalArgumentException.class, // Expected exception
+        invocationCount = 3,                   // Run test 3 times
+        threadPoolSize = 2,                    // Parallel execution within invocations
+        dataProvider = "loginCredentials"       // Data provider for parameterized tests
+    )
+    public void testLoginWithAdvancedFeatures() {
+        // This test showcases multiple TestNG capabilities
+    }
+    
+    // CONDITIONAL TEST EXECUTION
+    @Test(enabled = false, description = "Test disabled during development")
+    public void testUnderDevelopment() {
+        // This test will be skipped
+    }
+    
+    @Test(groups = {"smoke"}, description = "Critical path test")
+    public void testCriticalFunctionality() {
+        // Only runs when "smoke" group is executed
+    }
+    
+    // METHOD DEPENDENCIES
+    @Test(description = "Setup prerequisite data")
+    public void createTestUser() {
+        System.out.println("Creating test user for subsequent tests");
+    }
+    
+    @Test(dependsOnMethods = "createTestUser", description = "Login depends on user creation")
+    public void loginWithCreatedUser() {
+        System.out.println("Using the user created in previous test");
+    }
+    
+    @Test(dependsOnMethods = {"createTestUser", "loginWithCreatedUser"})
+    public void updateUserProfile() {
+        System.out.println("Updating profile - depends on both previous tests");
+    }
+    
+    // SETUP/TEARDOWN WITH CONDITIONS
+    @BeforeMethod(groups = {"api", "database"})
+    public void setupForApiTests() {
+        // Only runs for tests in "api" or "database" groups
+        System.out.println("Setting up API client and database connection");
+    }
+    
+    @BeforeClass(alwaysRun = true)  // Runs even if dependencies fail
+    public void criticalClassSetup() {
+        System.out.println("Critical setup that must always run");
+    }
+    
+    @AfterMethod(alwaysRun = true)  // Always runs, even if test fails
+    public void cleanupAlways() {
+        System.out.println("Cleanup that always executes (good for resource cleanup)");
+    }
+    
+    // TIMEOUT AND EXPECTED EXCEPTIONS
+    @Test(timeOut = 2000)  // Fails if takes longer than 2 seconds
+    public void testPerformance() {
+        // Performance-sensitive test
+        for (int i = 0; i < 1000; i++) {
+            // Some operation that should be fast
+        }
+    }
+    
+    @Test(expectedExceptions = {IllegalArgumentException.class, NullPointerException.class})
+    public void testExpectedException() {
+        // Test that should throw one of the specified exceptions
+        throw new IllegalArgumentException("Expected exception");
+    }
+    
+    // REPEATED EXECUTION
+    @Test(invocationCount = 5, description = "Run test 5 times to check for flakiness")
+    public void testStability() {
+        // Useful for identifying flaky tests
+        System.out.println("Iteration: " + (Math.random() * 100));
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="tip">
+                        <strong>Annotation Best Practices:</strong>
+                        <ul>
+                            <li><strong>Choose Right Scope:</strong> Use appropriate annotation level (Suite > Test > Class > Method)</li>
+                            <li><strong>Use alwaysRun:</strong> For critical cleanup operations that must execute regardless of failures</li>
+                            <li><strong>Group Strategically:</strong> Organize tests by functionality, speed, or environment requirements</li>
+                            <li><strong>Minimize Dependencies:</strong> Avoid creating brittle test chains with excessive method dependencies</li>
+                        </ul>
+                        <strong>Common Patterns:</strong> WebDriver lifecycle management, test data setup/cleanup, environment configuration, and parallel execution control.
                     </div>
                 </div>
             </div>

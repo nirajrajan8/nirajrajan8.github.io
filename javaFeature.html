@@ -374,6 +374,10 @@
             <a href="#records" class="toc-link">Records</a>
             <a href="#pattern-matching" class="toc-link">Pattern Matching</a>
             <a href="#switch-expressions" class="toc-link">Switch Expressions</a>
+            <a href="#virtual-threads" class="toc-link">Virtual Threads</a>
+            <a href="#modules" class="toc-link">Module System</a>
+            <a href="#string-formatting" class="toc-link">String Enhancements</a>
+            <a href="#structured-concurrency" class="toc-link">Structured Concurrency</a>
         </div>
     </div>
 
@@ -390,7 +394,30 @@
                     <span class="version-badge">Java 8+</span>
                 </div>
                 <div class="feature-content">
-                    <p class="feature-description">Concise way to represent anonymous functions. Perfect for callbacks and functional programming.</p>
+                    <p class="feature-description">Lambda expressions are anonymous functions that enable functional programming in Java. They provide a concise way to represent behavior that can be passed around as data.</p>
+                    
+                    <div class="single-example">
+                        <div class="code-header">Lambda Syntax Breakdown</div>
+                        <pre><code>// Basic syntax: (parameters) -> { body }
+// Example: (String s) -> { return s.toUpperCase(); }
+
+// Simplified forms:
+// 1. Single parameter, no parentheses needed
+s -> s.toUpperCase()
+
+// 2. No parameters
+() -> System.out.println("Hello")
+
+// 3. Multiple parameters
+(a, b) -> a + b
+
+// 4. Block body for complex logic
+(list) -> {
+    Collections.sort(list);
+    return list.get(0);
+}</code></pre>
+                    </div>
+
                     <div class="code-comparison">
                         <div class="code-block old-way">
                             <div class="code-header">Pre-Java 8 (Anonymous Class)</div>
@@ -399,18 +426,66 @@ Collections.sort(names, new Comparator&lt;String&gt;() {
     public int compare(String a, String b) {
         return a.compareTo(b);
     }
-});</code></pre>
+});
+
+// Filtering with anonymous class
+List&lt;String&gt; filtered = new ArrayList&lt;&gt;();
+for (String name : names) {
+    if (name.startsWith("A")) {
+        filtered.add(name);
+    }
+}</code></pre>
                         </div>
                         <div class="code-block new-way">
                             <div class="code-header">Java 8+ (Lambda)</div>
                             <pre><code>List&lt;String&gt; names = Arrays.asList("Alice", "Bob", "Charlie");
 names.sort((a, b) -&gt; a.compareTo(b));
-// Even shorter:
-names.sort(String::compareTo);</code></pre>
+// Even shorter with method reference:
+names.sort(String::compareTo);
+
+// Filtering with lambda and streams
+List&lt;String&gt; filtered = names.stream()
+    .filter(name -&gt; name.startsWith("A"))
+    .collect(Collectors.toList());</code></pre>
                         </div>
                     </div>
+
+                    <div class="single-example">
+                        <div class="code-header">Common Lambda Patterns in Testing</div>
+                        <pre><code>// Selenium WebDriver wait conditions
+WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+wait.until(driver -> driver.findElement(By.id("button")).isEnabled());
+
+// TestNG data transformation
+List&lt;String&gt; testData = Arrays.asList("user1", "user2", "user3");
+testData.forEach(username -> {
+    loginPage.enterUsername(username);
+    loginPage.clickLogin();
+    assert homePage.isDisplayed();
+    loginPage.logout();
+});
+
+// Exception handling in lambda
+Optional&lt;WebElement&gt; element = elements.stream()
+    .filter(el -> {
+        try {
+            return el.isDisplayed() && el.isEnabled();
+        } catch (StaleElementReferenceException e) {
+            return false;
+        }
+    })
+    .findFirst();</code></pre>
+                    </div>
+
                     <div class="tip">
-                        <strong>Pro Tip:</strong> Use lambdas for short, one-time operations. For reusable logic, consider method references or separate methods.
+                        <strong>Key Benefits:</strong> 
+                        <ul>
+                            <li><strong>Conciseness:</strong> Reduces boilerplate code significantly</li>
+                            <li><strong>Readability:</strong> Makes intent clearer, especially for simple operations</li>
+                            <li><strong>Functional Style:</strong> Enables functional programming patterns</li>
+                            <li><strong>Type Inference:</strong> Compiler can often infer parameter types</li>
+                        </ul>
+                        <strong>Best Practices:</strong> Keep lambdas short (1-3 lines). For complex logic, use method references or separate methods.
                     </div>
                 </div>
             </div>
@@ -458,24 +533,105 @@ for (String name : names) {
                     <span class="version-badge">Java 8+</span>
                 </div>
                 <div class="feature-content">
-                    <p class="feature-description">Pre-defined interfaces for common functional patterns: Consumer, Predicate, Function, Supplier.</p>
+                    <p class="feature-description">Functional interfaces are interfaces with exactly one abstract method. Java 8 provides many built-in functional interfaces that serve as targets for lambda expressions and method references.</p>
+                    
                     <div class="single-example">
-                        <div class="code-header">Common Functional Interfaces</div>
-                        <pre><code>// Consumer&lt;T&gt; - accepts input, returns nothing
+                        <div class="code-header">Core Functional Interface Types</div>
+                        <pre><code>// 1. Consumer&lt;T&gt; - takes input, returns nothing (void)
+//    Method: void accept(T t)
 Consumer&lt;String&gt; printer = System.out::println;
-names.forEach(printer);
+Consumer&lt;WebElement&gt; clicker = element -> element.click();
 
-// Predicate&lt;T&gt; - tests a condition, returns boolean
-Predicate&lt;Integer&gt; isEven = n -&gt; n % 2 == 0;
-numbers.stream().filter(isEven).forEach(System.out::println);
+// 2. Predicate&lt;T&gt; - takes input, returns boolean
+//    Method: boolean test(T t)
+Predicate&lt;Integer&gt; isPositive = n -> n > 0;
+Predicate&lt;WebElement&gt; isDisplayed = WebElement::isDisplayed;
 
-// Function&lt;T,R&gt; - transforms T to R
-Function&lt;String, Integer&gt; lengthGetter = String::length;
-names.stream().map(lengthGetter).forEach(System.out::println);
+// 3. Function&lt;T,R&gt; - takes input T, returns output R
+//    Method: R apply(T t)
+Function&lt;String, Integer&gt; stringLength = String::length;
+Function&lt;WebElement, String&gt; getText = WebElement::getText;
 
-// Supplier&lt;T&gt; - provides a value
-Supplier&lt;String&gt; dataSupplier = () -&gt; "Expensive computation";
-String data = dataSupplier.get();</code></pre>
+// 4. Supplier&lt;T&gt; - takes no input, returns output T
+//    Method: T get()
+Supplier&lt;String&gt; timeStamp = () -> LocalDateTime.now().toString();
+Supplier&lt;WebDriver&gt; driverFactory = () -> new ChromeDriver();</code></pre>
+                    </div>
+
+                    <div class="single-example">
+                        <div class="code-header">Practical Testing Examples</div>
+                        <pre><code>// Consumer - Actions that don't return values
+Consumer&lt;String&gt; testLogger = message -> {
+    System.out.println("[TEST] " + LocalTime.now() + ": " + message);
+};
+
+List&lt;String&gt; testSteps = Arrays.asList("Login", "Navigate", "Search", "Logout");
+testSteps.forEach(testLogger);
+
+// Predicate - Conditions and validations
+Predicate&lt;String&gt; isValidEmail = email -> 
+    email != null && email.contains("@") && email.contains(".");
+
+Predicate&lt;WebElement&gt; isClickable = element -> 
+    element.isDisplayed() && element.isEnabled();
+
+List&lt;String&gt; emails = Arrays.asList("test@example.com", "invalid", "user@test.org");
+List&lt;String&gt; validEmails = emails.stream()
+    .filter(isValidEmail)
+    .collect(Collectors.toList());
+
+// Function - Data transformations
+Function&lt;String, TestUser&gt; userCreator = username -> 
+    new TestUser(username, username + "@test.com", "password123");
+
+List&lt;TestUser&gt; testUsers = Arrays.asList("alice", "bob", "charlie")
+    .stream()
+    .map(userCreator)
+    .collect(Collectors.toList());
+
+// Supplier - Lazy evaluation and factories
+Supplier&lt;String&gt; uniqueId = () -> "test_" + System.currentTimeMillis();
+Supplier&lt;ChromeOptions&gt; chromeOptionsSupplier = () -> {
+    ChromeOptions options = new ChromeOptions();
+    options.addArguments("--headless", "--no-sandbox");
+    return options;
+};</code></pre>
+                    </div>
+
+                    <div class="single-example">
+                        <div class="code-header">Combining Functional Interfaces</div>
+                        <pre><code>// Predicate composition - AND, OR, NEGATE
+Predicate&lt;String&gt; hasAtSymbol = s -> s.contains("@");
+Predicate&lt;String&gt; hasDot = s -> s.contains(".");
+Predicate&lt;String&gt; isValidEmail = hasAtSymbol.and(hasDot);
+Predicate&lt;String&gt; isInvalidEmail = isValidEmail.negate();
+
+// Function composition - andThen, compose
+Function&lt;String, String&gt; removeSpaces = s -> s.replace(" ", "");
+Function&lt;String, String&gt; toLowerCase = String::toLowerCase;
+Function&lt;String, String&gt; normalize = removeSpaces.andThen(toLowerCase);
+
+String result = normalize.apply("Test User Name"); // "testusername"
+
+// Consumer chaining - andThen
+Consumer&lt;String&gt; logToConsole = System.out::println;
+Consumer&lt;String&gt; logToFile = msg -> writeToLog(msg);
+Consumer&lt;String&gt; dualLogger = logToConsole.andThen(logToFile);
+
+private static void writeToLog(String message) {
+    // Implementation for file logging
+}</code></pre>
+                    </div>
+
+                    <div class="tip">
+                        <strong>Why Functional Interfaces Matter:</strong>
+                        <ul>
+                            <li><strong>Lambda Target:</strong> They serve as target types for lambda expressions</li>
+                            <li><strong>Method References:</strong> Enable concise method reference syntax</li>
+                            <li><strong>Composability:</strong> Can be combined to create complex behavior</li>
+                            <li><strong>Type Safety:</strong> Provide compile-time type checking</li>
+                        </ul>
+                        <strong>Testing Benefits:</strong> Perfect for page object actions, test data generation, validation logic, and custom wait conditions.
                     </div>
                 </div>
             </div>
@@ -611,31 +767,162 @@ String[] arrayLambda = Stream.of("A", "B", "C")
                     <span class="version-badge">Java 8+</span>
                 </div>
                 <div class="feature-content">
-                    <p class="feature-description">Comprehensive guide to intermediate and terminal operations.</p>
+                    <p class="feature-description">Streams provide a declarative approach to processing collections of data. They enable functional-style operations like filter, map, and reduce without modifying the original data source.</p>
+                    
                     <div class="single-example">
-                        <div class="code-header">Stream Pipeline Examples</div>
-                        <pre><code>List&lt;String&gt; words = Arrays.asList("apple", "banana", "cherry", "date");
+                        <div class="code-header">Stream Lifecycle & Operation Types</div>
+                        <pre><code>// Stream pipeline has 3 parts:
+// 1. Source: where data comes from
+// 2. Intermediate operations: transform data (lazy)
+// 3. Terminal operation: triggers execution & produces result
 
-// Complex pipeline
-Map&lt;Integer, List&lt;String&gt;&gt; groupedByLength = words.stream()
-    .filter(word -&gt; word.length() &gt; 4)
-    .map(String::toUpperCase)
-    .collect(Collectors.groupingBy(String::length));
+List&lt;String&gt; testFiles = Arrays.asList(
+    "LoginTest.java", "UserTest.java", "AdminTest.java", "Helper.java"
+);
+
+// Intermediate operations (lazy - not executed until terminal operation)
+Stream&lt;String&gt; filteredStream = testFiles.stream()
+    .filter(file -> file.endsWith("Test.java"))  // Intermediate
+    .map(String::toUpperCase);                    // Intermediate
+
+// Terminal operation (triggers execution)
+List&lt;String&gt; result = filteredStream
+    .collect(Collectors.toList());                // Terminal
+
+System.out.println(result); // [LOGINTEST.JAVA, USERTEST.JAVA, ADMINTEST.JAVA]</code></pre>
+                    </div>
+
+                    <div class="single-example">
+                        <div class="code-header">Common Stream Operations Explained</div>
+                        <pre><code>List&lt;String&gt; testCases = Arrays.asList(
+    "testLogin", "testLogout", "testSearch", "testAdmin", "setupTest"
+);
+
+// FILTER - keeps elements that match predicate
+List&lt;String&gt; actualTests = testCases.stream()
+    .filter(test -> test.startsWith("test"))     // Keep only tests
+    .collect(Collectors.toList());
+
+// MAP - transforms each element
+List&lt;String&gt; testMethods = testCases.stream()
+    .map(test -> test + "()")                    // Add parentheses
+    .collect(Collectors.toList());
+
+// SORTED - orders elements (creates new stream)
+List&lt;String&gt; sortedTests = testCases.stream()
+    .sorted()                                    // Natural ordering
+    .collect(Collectors.toList());
+
+// DISTINCT - removes duplicates
+List&lt;String&gt; uniqueTests = Arrays.asList("test1", "test2", "test1", "test3")
+    .stream()
+    .distinct()                                  // Removes duplicates
+    .collect(Collectors.toList());
+
+// LIMIT & SKIP - control stream size
+List&lt;String&gt; firstTwoTests = testCases.stream()
+    .limit(2)                                    // Take first 2
+    .collect(Collectors.toList());
+
+List&lt;String&gt; skipFirstTwo = testCases.stream()
+    .skip(2)                                     // Skip first 2
+    .collect(Collectors.toList());</code></pre>
+                    </div>
+
+                    <div class="single-example">
+                        <div class="code-header">Advanced Stream Patterns in Testing</div>
+                        <pre><code>// Example: Processing test results
+class TestResult {
+    String testName;
+    boolean passed;
+    long duration;
+    
+    TestResult(String name, boolean passed, long duration) {
+        this.testName = name;
+        this.passed = passed;
+        this.duration = duration;
+    }
+    
+    // getters...
+}
+
+List&lt;TestResult&gt; testResults = Arrays.asList(
+    new TestResult("loginTest", true, 1200),
+    new TestResult("searchTest", false, 800),
+    new TestResult("checkoutTest", true, 2100),
+    new TestResult("adminTest", true, 500)
+);
+
+// Complex pipeline - find failed tests and their details
+String failedTestsReport = testResults.stream()
+    .filter(result -> !result.passed)           // Only failed tests
+    .map(result -> String.format("%s (Duration: %dms)", 
+                                 result.testName, result.duration))
+    .collect(Collectors.joining(", ", "Failed tests: ", ""));
+
+// Grouping tests by status
+Map&lt;Boolean, List&lt;TestResult&gt;&gt; groupedByStatus = testResults.stream()
+    .collect(Collectors.partitioningBy(result -> result.passed));
+
+// Statistics on test duration
+DoubleSummaryStatistics durationStats = testResults.stream()
+    .filter(result -> result.passed)            // Only passed tests
+    .collect(Collectors.summarizingDouble(result -> result.duration));
+
+System.out.println("Average duration: " + durationStats.getAverage());
+System.out.println("Max duration: " + durationStats.getMax());
+
+// FlatMap example - processing test suites
+List&lt;List&lt;String&gt;&gt; testSuites = Arrays.asList(
+    Arrays.asList("loginTest", "logoutTest"),
+    Arrays.asList("searchTest", "filterTest"),
+    Arrays.asList("adminTest")
+);
+
+List&lt;String&gt; allTests = testSuites.stream()
+    .flatMap(List::stream)                       // Flatten nested lists
+    .distinct()                                  // Remove duplicates
+    .sorted()                                    // Sort alphabetically
+    .collect(Collectors.toList());</code></pre>
+                    </div>
+
+                    <div class="single-example">
+                        <div class="code-header">Parallel Streams & Performance</div>
+                        <pre><code>// Parallel processing for CPU-intensive operations
+List&lt;String&gt; largeDataSet = generateTestData(1000000);
+
+// Sequential processing
+long startTime = System.currentTimeMillis();
+long sequentialCount = largeDataSet.stream()
+    .filter(data -> data.contains("test"))
+    .count();
+long sequentialTime = System.currentTimeMillis() - startTime;
 
 // Parallel processing
-int sum = IntStream.range(1, 1000000)
-    .parallel()
-    .filter(n -&gt; n % 2 == 0)
-    .sum();
+startTime = System.currentTimeMillis();
+long parallelCount = largeDataSet.parallelStream()  // or .stream().parallel()
+    .filter(data -> data.contains("test"))
+    .count();
+long parallelTime = System.currentTimeMillis() - startTime;
 
-// FlatMap for nested collections
-List&lt;List&lt;String&gt;&gt; nested = Arrays.asList(
-    Arrays.asList("a", "b"),
-    Arrays.asList("c", "d")
-);
-List&lt;String&gt; flattened = nested.stream()
-    .flatMap(List::stream)
-    .collect(Collectors.toList());</code></pre>
+System.out.println("Sequential: " + sequentialTime + "ms");
+System.out.println("Parallel: " + parallelTime + "ms");
+
+// Note: Parallel streams are best for:
+// - CPU-intensive operations
+// - Large datasets (typically 1000+ elements)
+// - Stateless operations</code></pre>
+                    </div>
+
+                    <div class="tip">
+                        <strong>Stream Benefits:</strong>
+                        <ul>
+                            <li><strong>Declarative:</strong> Express what you want, not how to achieve it</li>
+                            <li><strong>Composable:</strong> Chain operations to build complex processing pipelines</li>
+                            <li><strong>Lazy Evaluation:</strong> Operations only execute when terminal operation is called</li>
+                            <li><strong>Parallel Processing:</strong> Easy parallelization with parallel streams</li>
+                        </ul>
+                        <strong>Testing Use Cases:</strong> Processing test data, filtering results, generating reports, transforming test inputs, and aggregating metrics.
                     </div>
                 </div>
             </div>
@@ -646,25 +933,238 @@ List&lt;String&gt; flattened = nested.stream()
                     <span class="version-badge">Java 8+</span>
                 </div>
                 <div class="feature-content">
-                    <p class="feature-description">A container object to handle potential null values gracefully.</p>
+                    <p class="feature-description">Optional is a container object that may or may not contain a value. It's designed to eliminate null pointer exceptions and make code more expressive when dealing with potentially absent values.</p>
+                    
+                    <div class="single-example">
+                        <div class="code-header">Creating Optional Objects</div>
+                        <pre><code>// Three ways to create Optional objects:
+
+// 1. Optional.of() - for non-null values (throws NPE if null)
+Optional&lt;String&gt; definiteValue = Optional.of("Hello World");
+
+// 2. Optional.ofNullable() - safe for potentially null values
+String mightBeNull = getUserInput();
+Optional&lt;String&gt; safeValue = Optional.ofNullable(mightBeNull);
+
+// 3. Optional.empty() - represents no value
+Optional&lt;String&gt; emptyValue = Optional.empty();
+
+// Check if value is present
+if (safeValue.isPresent()) {
+    System.out.println("Value: " + safeValue.get());
+}
+
+// Better approach - using functional methods
+safeValue.ifPresent(value -> System.out.println("Value: " + value));</code></pre>
+                    </div>
+
                     <div class="code-comparison">
                         <div class="code-block old-way">
-                            <div class="code-header">Traditional Null Check</div>
-                            <pre><code>String name = findNameById(123);
-if (name != null) {
-    System.out.println(name.toUpperCase());
-} else {
-    System.out.println("Name not found");
-}</code></pre>
+                            <div class="code-header">Traditional Null Handling</div>
+                            <pre><code>// Nested null checks - "Pyramid of Doom"
+public String getElementText(WebDriver driver, String id) {
+    WebElement element = driver.findElement(By.id(id));
+    if (element != null) {
+        String text = element.getText();
+        if (text != null && !text.isEmpty()) {
+            return text.trim().toUpperCase();
+        } else {
+            return "DEFAULT_TEXT";
+        }
+    } else {
+        return "ELEMENT_NOT_FOUND";
+    }
+}
+
+// Multiple null checks in test data processing
+String userName = getUser();
+if (userName != null) {
+    String email = getEmail(userName);
+    if (email != null) {
+        String domain = extractDomain(email);
+        if (domain != null) {
+            return domain.toUpperCase();
+        }
+    }
+}
+return "UNKNOWN_DOMAIN";</code></pre>
                         </div>
                         <div class="code-block new-way">
                             <div class="code-header">Optional Approach</div>
-                            <pre><code>Optional&lt;String&gt; name = findNameById(123);
-name.ifPresentOrElse(
-    s -&gt; System.out.println(s.toUpperCase()),
-    () -&gt; System.out.println("Name not found")
-);</code></pre>
+                            <pre><code>// Clean, functional approach
+public String getElementText(WebDriver driver, String id) {
+    return findElementSafely(driver, id)
+        .map(WebElement::getText)
+        .filter(text -> !text.isEmpty())
+        .map(String::trim)
+        .map(String::toUpperCase)
+        .orElse("DEFAULT_TEXT");
+}
+
+private Optional&lt;WebElement&gt; findElementSafely(WebDriver driver, String id) {
+    try {
+        return Optional.of(driver.findElement(By.id(id)));
+    } catch (NoSuchElementException e) {
+        return Optional.empty();
+    }
+}
+
+// Chaining operations elegantly
+String domain = Optional.ofNullable(getUser())
+    .flatMap(this::getEmail)        // flatMap for Optional-returning methods
+    .flatMap(this::extractDomain)
+    .map(String::toUpperCase)
+    .orElse("UNKNOWN_DOMAIN");
+
+private Optional&lt;String&gt; getEmail(String user) { /* returns Optional&lt;String&gt; */ }
+private Optional&lt;String&gt; extractDomain(String email) { /* returns Optional&lt;String&gt; */ }</code></pre>
                         </div>
+                    </div>
+
+                    <div class="single-example">
+                        <div class="code-header">Essential Optional Methods</div>
+                        <pre><code>Optional&lt;String&gt; testData = Optional.ofNullable(getTestInput());
+
+// CHECKING PRESENCE
+boolean hasValue = testData.isPresent();
+boolean isEmpty = testData.isEmpty();  // Java 11+
+
+// GETTING VALUES
+String value = testData.orElse("default");                    // Simple default
+String computed = testData.orElseGet(() -> generateDefault()); // Lazy default
+String required = testData.orElseThrow();                     // Throws if empty
+String custom = testData.orElseThrow(() -> new TestException("No data")); // Custom exception
+
+// TRANSFORMING VALUES
+Optional&lt;String&gt; uppercase = testData.map(String::toUpperCase);
+Optional&lt;Integer&gt; length = testData.map(String::length);
+
+// FILTERING VALUES
+Optional&lt;String&gt; validData = testData.filter(s -> s.length() > 5);
+
+// FLAT MAPPING (for Optional-returning methods)
+Optional&lt;String&gt; processed = testData.flatMap(this::processData);
+
+// CONDITIONAL ACTIONS
+testData.ifPresent(data -> logTestData(data));                    // Java 8+
+testData.ifPresentOrElse(                                         // Java 9+
+    data -> logTestData(data),
+    () -> logMissingData()
+);
+
+private Optional&lt;String&gt; processData(String input) {
+    // Some processing that might return empty
+    return input.isEmpty() ? Optional.empty() : Optional.of(input.trim());
+}</code></pre>
+                    </div>
+
+                    <div class="single-example">
+                        <div class="code-header">Testing Scenarios with Optional</div>
+                        <pre><code>// Page Object with Optional returns
+public class LoginPage {
+    private WebDriver driver;
+    
+    // Safe element finding
+    public Optional&lt;WebElement&gt; findUsernameField() {
+        try {
+            WebElement element = driver.findElement(By.id("username"));
+            return element.isDisplayed() ? Optional.of(element) : Optional.empty();
+        } catch (NoSuchElementException e) {
+            return Optional.empty();
+        }
+    }
+    
+    // Safe text extraction
+    public Optional&lt;String&gt; getErrorMessage() {
+        return findElementSafely(By.className("error"))
+            .filter(WebElement::isDisplayed)
+            .map(WebElement::getText)
+            .filter(text -> !text.trim().isEmpty());
+    }
+    
+    // Fluent login with validation
+    public boolean login(String username, String password) {
+        return findUsernameField()
+            .flatMap(field -> {
+                field.sendKeys(username);
+                return findPasswordField();
+            })
+            .flatMap(field -> {
+                field.sendKeys(password);
+                return findLoginButton();
+            })
+            .map(button -> {
+                button.click();
+                return waitForLogin();
+            })
+            .orElse(false);
+    }
+}
+
+// Test data processing
+public class TestDataProcessor {
+    public Optional&lt;TestUser&gt; createValidUser(Map&lt;String, String&gt; userData) {
+        return Optional.ofNullable(userData.get("username"))
+            .filter(name -> name.length() >= 3)
+            .flatMap(name -> Optional.ofNullable(userData.get("email"))
+                .filter(email -> email.contains("@"))
+                .map(email -> new TestUser(name, email))
+            );
+    }
+    
+    // Chain multiple validations
+    public boolean isValidTestData(TestUser user) {
+        return Optional.ofNullable(user)
+            .filter(u -> u.getUsername() != null)
+            .filter(u -> u.getUsername().length() >= 3)
+            .filter(u -> u.getEmail() != null)
+            .filter(u -> u.getEmail().contains("@"))
+            .isPresent();
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="tip">
+                        <strong>Optional Benefits:</strong>
+                        <ul>
+                            <li><strong>Null Safety:</strong> Eliminates null pointer exceptions through type safety</li>
+                            <li><strong>Expressive API:</strong> Makes the absence of values explicit in method signatures</li>
+                            <li><strong>Functional Style:</strong> Enables fluent, chainable operations</li>
+                            <li><strong>Better Documentation:</strong> Method signature clearly indicates optional returns</li>
+                        </ul>
+                        <strong>Anti-Patterns to Avoid:</strong> Don't use Optional for fields, collections, or method parameters. Use Optional.get() without checking isPresent().
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3 class="feature-title">Advanced Stream Collectors</h3>
+                    <span class="version-badge">Java 8+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Powerful collection operations using specialized collectors.</p>
+                    <div class="single-example">
+                        <div class="code-header">Advanced Collectors Examples</div>
+                        <pre><code>List&lt;Employee&gt; employees = getEmployees();
+
+// Grouping by department and counting
+Map&lt;String, Long&gt; countByDept = employees.stream()
+    .collect(Collectors.groupingBy(Employee::getDepartment, 
+             Collectors.counting()));
+
+// Partitioning by salary threshold
+Map&lt;Boolean, List&lt;Employee&gt;&gt; salaryPartition = employees.stream()
+    .collect(Collectors.partitioningBy(emp -&gt; emp.getSalary() &gt; 50000));
+
+// Custom collector for statistics
+DoubleSummaryStatistics salaryStats = employees.stream()
+    .collect(Collectors.summarizingDouble(Employee::getSalary));
+
+// Joining names with custom delimiter
+String employeeNames = employees.stream()
+    .map(Employee::getName)
+    .collect(Collectors.joining(", ", "[", "]"));</code></pre>
                     </div>
                 </div>
             </div>
@@ -686,16 +1186,81 @@ name.ifPresentOrElse(
                 <div class="feature-content">
                     <p class="feature-description">A powerful API for asynchronous programming, chaining dependent tasks and handling results.</p>
                     <div class="single-example">
-                        <div class="code-header">Async Task Chaining</div>
-                        <pre><code>CompletableFuture&lt;String&gt; future = CompletableFuture.supplyAsync(() -&gt; {
-    // Simulate long-running task
+                        <div class="code-header">Advanced CompletableFuture Examples</div>
+                        <pre><code>// Basic async task chaining
+CompletableFuture&lt;String&gt; future = CompletableFuture.supplyAsync(() -&gt; {
+    // Simulate API call
     try { Thread.sleep(1000); } catch (InterruptedException e) {}
     return "Hello";
 });
 
 future.thenApply(s -&gt; s + " World")
       .thenAccept(System.out::println)
-      .join(); // Wait for completion</code></pre>
+      .join(); // Wait for completion
+
+// Combining multiple futures
+CompletableFuture&lt;String&gt; future1 = CompletableFuture.supplyAsync(() -&gt; "Hello");
+CompletableFuture&lt;String&gt; future2 = CompletableFuture.supplyAsync(() -&gt; "World");
+
+CompletableFuture&lt;String&gt; combined = future1.thenCombine(future2, 
+    (s1, s2) -&gt; s1 + " " + s2);
+
+// Exception handling
+CompletableFuture&lt;String&gt; futureWithError = CompletableFuture.supplyAsync(() -&gt; {
+    if (Math.random() &gt; 0.5) throw new RuntimeException("Random error");
+    return "Success";
+}).exceptionally(throwable -&gt; "Fallback value");
+
+// Waiting for any of multiple futures
+CompletableFuture&lt;String&gt; fastest = CompletableFuture.anyOf(future1, future2)
+    .thenApply(result -&gt; (String) result);</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3 class="feature-title">Virtual Threads</h3>
+                    <span class="version-badge">Java 19+ (Preview), Java 21+ (Stable)</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Lightweight threads that dramatically improve throughput for concurrent applications.</p>
+                    <div class="code-comparison">
+                        <div class="code-block old-way">
+                            <div class="code-header">Platform Threads</div>
+                            <pre><code>// Traditional platform threads - expensive
+ExecutorService executor = Executors.newFixedThreadPool(100);
+
+for (int i = 0; i &lt; 10000; i++) {
+    executor.submit(() -&gt; {
+        // I/O-bound task
+        try { Thread.sleep(1000); } catch (InterruptedException e) {}
+        System.out.println("Task completed");
+    });
+}</code></pre>
+                        </div>
+                        <div class="code-block new-way">
+                            <div class="code-header">Virtual Threads</div>
+                            <pre><code>// Virtual threads - lightweight, millions possible
+try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+    for (int i = 0; i &lt; 10000; i++) {
+        executor.submit(() -&gt; {
+            // I/O-bound task
+            try { Thread.sleep(Duration.ofSeconds(1)); } 
+            catch (InterruptedException e) {}
+            System.out.println("Task completed");
+        });
+    }
+}
+
+// Creating virtual threads directly
+Thread.ofVirtual().start(() -&gt; {
+    System.out.println("Running in virtual thread: " + Thread.currentThread());
+});</code></pre>
+                        </div>
+                    </div>
+                    <div class="tip">
+                        <strong>Best Practice:</strong> Virtual threads excel at I/O-bound tasks. For CPU-intensive work, platform threads are still preferred.
                     </div>
                 </div>
             </div>
@@ -769,28 +1334,231 @@ var wait = new WebDriverWait(driver, Duration.ofSeconds(10));</code></pre>
                     <span class="version-badge">Java 16+</span>
                 </div>
                 <div class="feature-content">
-                    <p class="feature-description">Compact, immutable data carrier classes that automatically generate boilerplate code.</p>
+                    <p class="feature-description">Records are a special kind of class designed to be transparent holders for immutable data. They automatically provide constructor, getters, equals(), hashCode(), and toString() methods, dramatically reducing boilerplate code.</p>
+                    
+                    <div class="single-example">
+                        <div class="code-header">What Records Provide Automatically</div>
+                        <pre><code>// Simple record declaration
+public record TestResult(String testName, boolean passed, long durationMs) {}
+
+// This single line automatically generates:
+// 1. Constructor: TestResult(String testName, boolean passed, long durationMs)
+// 2. Getters: testName(), passed(), durationMs() [note: no "get" prefix]
+// 3. equals() method that compares all fields
+// 4. hashCode() method based on all fields  
+// 5. toString() method showing all field values
+// 6. All fields are final and private
+
+// Usage example:
+TestResult result = new TestResult("loginTest", true, 1250L);
+System.out.println(result.testName());    // "loginTest"
+System.out.println(result.passed());      // true
+System.out.println(result.durationMs());  // 1250
+System.out.println(result);               // TestResult[testName=loginTest, passed=true, durationMs=1250]</code></pre>
+                    </div>
+
                     <div class="code-comparison">
                         <div class="code-block old-way">
-                            <div class="code-header">Traditional POJO</div>
-                            <pre><code>public class Point {
-    private final int x;
-    private final int y;
+                            <div class="code-header">Traditional POJO (50+ lines)</div>
+                            <pre><code>public class TestResult {
+    private final String testName;
+    private final boolean passed;
+    private final long durationMs;
 
-    public Point(int x, int y) {
-        this.x = x;
-        this.y = y;
+    public TestResult(String testName, boolean passed, long durationMs) {
+        this.testName = testName;
+        this.passed = passed;
+        this.durationMs = durationMs;
     }
 
-    public int getX() { return x; }
-    public int getY() { return y; }
-    // equals(), hashCode(), toString() methods here...
+    public String getTestName() { return testName; }
+    public boolean isPassed() { return passed; }
+    public long getDurationMs() { return durationMs; }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        TestResult that = (TestResult) obj;
+        return passed == that.passed &&
+               durationMs == that.durationMs &&
+               Objects.equals(testName, that.testName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(testName, passed, durationMs);
+    }
+
+    @Override
+    public String toString() {
+        return "TestResult{" +
+                "testName='" + testName + '\'' +
+                ", passed=" + passed +
+                ", durationMs=" + durationMs +
+                '}';
+    }
 }</code></pre>
                         </div>
                         <div class="code-block new-way">
-                            <div class="code-header">Record</div>
-                            <pre><code>public record Point(int x, int y) {}</code></pre>
+                            <div class="code-header">Record (1 line)</div>
+                            <pre><code>public record TestResult(String testName, boolean passed, long durationMs) {}</code></pre>
                         </div>
+                    </div>
+
+                    <div class="single-example">
+                        <div class="code-header">Advanced Record Features</div>
+                        <pre><code>// Records can have custom methods, validation, and static factories
+public record User(String username, String email, int age) {
+    
+    // Compact constructor - validation without explicit assignment
+    public User {
+        if (username == null || username.isBlank()) {
+            throw new IllegalArgumentException("Username cannot be blank");
+        }
+        if (age < 0 || age > 150) {
+            throw new IllegalArgumentException("Invalid age: " + age);
+        }
+        if (email == null || !email.contains("@")) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+        
+        // Fields are automatically assigned after validation
+        // No need to write: this.username = username; etc.
+    }
+    
+    // Custom instance methods
+    public boolean isAdult() {
+        return age >= 18;
+    }
+    
+    public String getDomain() {
+        return email.substring(email.indexOf('@') + 1);
+    }
+    
+    // Static factory methods
+    public static User testUser(String username) {
+        return new User(username, username + "@test.com", 25);
+    }
+    
+    public static User fromCsv(String csvLine) {
+        String[] parts = csvLine.split(",");
+        return new User(parts[0], parts[1], Integer.parseInt(parts[2]));
+    }
+}
+
+// Usage
+User user = User.testUser("alice");
+System.out.println(user.isAdult());     // true
+System.out.println(user.getDomain());   // "test.com"</code></pre>
+                    </div>
+
+                    <div class="single-example">
+                        <div class="code-header">Records in Testing Scenarios</div>
+                        <pre><code>// Test data models
+public record LoginCredentials(String username, String password) {
+    public static LoginCredentials admin() {
+        return new LoginCredentials("admin", "admin123");
+    }
+    
+    public static LoginCredentials user(String name) {
+        return new LoginCredentials(name, "password123");
+    }
+}
+
+// Test configuration
+public record BrowserConfig(String browserName, boolean headless, String downloadPath) {
+    public static BrowserConfig chrome() {
+        return new BrowserConfig("chrome", false, "/tmp/downloads");
+    }
+    
+    public static BrowserConfig headlessChrome() {
+        return new BrowserConfig("chrome", true, "/tmp/downloads");
+    }
+}
+
+// API response modeling
+public record ApiResponse&lt;T&gt;(int statusCode, String message, T data) {
+    public boolean isSuccess() {
+        return statusCode >= 200 && statusCode < 300;
+    }
+    
+    public static &lt;T&gt; ApiResponse&lt;T&gt; success(T data) {
+        return new ApiResponse&lt;&gt;(200, "OK", data);
+    }
+    
+    public static &lt;T&gt; ApiResponse&lt;T&gt; error(int code, String message) {
+        return new ApiResponse&lt;&gt;(code, message, null);
+    }
+}
+
+// Database test data
+public record Product(long id, String name, double price, String category) {
+    public record Builder(long id, String name, double price, String category) {
+        public Builder withId(long id) { return new Builder(id, name, price, category); }
+        public Builder withName(String name) { return new Builder(id, name, price, category); }
+        public Builder withPrice(double price) { return new Builder(id, name, price, category); }
+        public Builder withCategory(String category) { return new Builder(id, name, price, category); }
+        public Product build() { return new Product(id, name, price, category); }
+    }
+    
+    public static Builder builder() {
+        return new Builder(0, "", 0.0, "");
+    }
+}
+
+// Usage in tests
+@Test
+public void testProductCreation() {
+    Product laptop = Product.builder()
+        .withId(1)
+        .withName("Gaming Laptop")
+        .withPrice(1299.99)
+        .withCategory("Electronics")
+        .build();
+    
+    assertEquals("Gaming Laptop", laptop.name());
+    assertEquals(1299.99, laptop.price(), 0.01);
+}</code></pre>
+                    </div>
+
+                    <div class="single-example">
+                        <div class="code-header">Record Patterns (Java 19+)</div>
+                        <pre><code>// Records work beautifully with pattern matching
+public record Point(int x, int y) {}
+public record Circle(Point center, int radius) {}
+public record Rectangle(Point topLeft, Point bottomRight) {}
+
+public static String describe(Object shape) {
+    return switch (shape) {
+        // Destructuring records in pattern matching
+        case Circle(Point(var x, var y), var radius) -> 
+            String.format("Circle at (%d,%d) with radius %d", x, y, radius);
+            
+        case Rectangle(Point(var x1, var y1), Point(var x2, var y2)) ->
+            String.format("Rectangle from (%d,%d) to (%d,%d)", x1, y1, x2, y2);
+            
+        case Point(var x, var y) ->
+            String.format("Point at (%d,%d)", x, y);
+            
+        default -> "Unknown shape";
+    };
+}
+
+// Usage
+Circle circle = new Circle(new Point(10, 20), 5);
+System.out.println(describe(circle)); // "Circle at (10,20) with radius 5"</code></pre>
+                    </div>
+
+                    <div class="tip">
+                        <strong>Record Benefits:</strong>
+                        <ul>
+                            <li><strong>Immutability:</strong> All fields are final, promoting thread safety</li>
+                            <li><strong>Data Transparency:</strong> Clear intent as pure data carriers</li>
+                            <li><strong>Less Boilerplate:</strong> Automatic generation of common methods</li>
+                            <li><strong>Pattern Matching:</strong> First-class support for destructuring</li>
+                        </ul>
+                        <strong>When to Use:</strong> DTOs, value objects, configuration classes, test data models, API responses, and any immutable data structures.
                     </div>
                 </div>
             </div>
@@ -855,6 +1623,54 @@ switch (day) {
     default -> "Weekday";
 };</code></pre>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3 class="feature-title">Pattern Matching for Switch</h3>
+                    <span class="version-badge">Java 17+ (Preview), Java 21+ (Stable)</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Enhanced switch expressions with pattern matching and guard conditions.</p>
+                    <div class="single-example">
+                        <div class="code-header">Pattern Matching Switch</div>
+                        <pre><code>// Pattern matching with type patterns
+public String processObject(Object obj) {
+    return switch (obj) {
+        case String s -> "String: " + s;
+        case Integer i -> "Number: " + i;
+        case List&lt;?&gt; list -> "List with " + list.size() + " elements";
+        case null -> "null value";
+        default -> "Unknown type: " + obj.getClass().getSimpleName();
+    };
+}
+
+// Guard conditions (when clause)
+public String categorizeNumber(Object obj) {
+    return switch (obj) {
+        case Integer i when i > 0 -> "Positive integer: " + i;
+        case Integer i when i < 0 -> "Negative integer: " + i;
+        case Integer i when i == 0 -> "Zero";
+        case Double d when d > 0.0 -> "Positive double: " + d;
+        default -> "Not a number or negative";
+    };
+}
+
+// Record patterns (Java 19+)
+public record Point(int x, int y) {}
+public record Circle(Point center, int radius) {}
+
+public String describe(Object shape) {
+    return switch (shape) {
+        case Circle(Point(var x, var y), var r) -> 
+            "Circle at (" + x + "," + y + ") with radius " + r;
+        case Point(var x, var y) -> 
+            "Point at (" + x + "," + y + ")";
+        default -> "Unknown shape";
+    };
+}</code></pre>
                     </div>
                 </div>
             </div>
@@ -1106,6 +1922,192 @@ class Car implements Vehicle {
         System.out.println("Driving a car");
     }
 }</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3 class="feature-title">Module System (Project Jigsaw)</h3>
+                    <span class="version-badge">Java 9+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">A module system that enables better encapsulation and dependency management.</p>
+                    <div class="single-example">
+                        <div class="code-header">Module Declaration (module-info.java)</div>
+                        <pre><code>// module-info.java in src/main/java
+module com.example.myapp {
+    // Dependencies on other modules
+    requires java.base;        // automatic
+    requires java.logging;
+    requires transitive java.sql;  // transitive dependency
+    
+    // API exports
+    exports com.example.myapp.api;
+    exports com.example.myapp.model to com.example.client;
+    
+    // Service providing
+    provides com.example.spi.DatabaseService 
+        with com.example.myapp.impl.PostgreSQLService;
+    
+    // Service consumption
+    uses com.example.spi.LoggingService;
+}
+
+// Usage: Accessing module information at runtime
+Module module = MyClass.class.getModule();
+System.out.println("Module name: " + module.getName());
+System.out.println("Is named: " + module.isNamed());</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3 class="feature-title">String Formatting Enhancements</h3>
+                    <span class="version-badge">Java 15+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">New methods for string formatting and manipulation.</p>
+                    <div class="single-example">
+                        <div class="code-header">String Formatting Examples</div>
+                        <pre><code>// String.formatted() method (Java 15+)
+String name = "Alice";
+int age = 30;
+String message = "Hello %s, you are %d years old".formatted(name, age);
+
+// Text blocks with formatting
+String template = """
+    {
+      "name": "%s",
+      "age": %d,
+      "active": %b
+    }
+    """.formatted(name, age, true);
+
+// String.translateEscapes() (Java 15+)
+String escaped = "Hello\\nWorld\\t!";
+String unescaped = escaped.translateEscapes(); // "Hello\nWorld\t!"
+
+// String.indent() (Java 12+)
+String text = "Hello\nWorld";
+String indented = text.indent(4); // Adds 4 spaces to each line
+
+// String.transform() (Java 12+)
+String result = "hello world"
+    .transform(String::toUpperCase)
+    .transform(s -> s.replace(" ", "_"));
+
+// String.repeat() (Java 11+)
+String stars = "*".repeat(10); // "**********"</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3 class="feature-title">Enhanced Record Features</h3>
+                    <span class="version-badge">Java 16+</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">Advanced record patterns and customizations.</p>
+                    <div class="single-example">
+                        <div class="code-header">Advanced Record Examples</div>
+                        <pre><code>// Records with custom methods and validation
+public record Person(String name, int age, String email) {
+    // Compact constructor for validation
+    public Person {
+        if (age < 0) throw new IllegalArgumentException("Age cannot be negative");
+        if (name == null || name.isBlank()) 
+            throw new IllegalArgumentException("Name cannot be blank");
+    }
+    
+    // Custom methods
+    public boolean isAdult() {
+        return age >= 18;
+    }
+    
+    // Static factory method
+    public static Person of(String name, int age) {
+        return new Person(name, age, generateEmail(name));
+    }
+    
+    private static String generateEmail(String name) {
+        return name.toLowerCase().replace(" ", ".") + "@example.com";
+    }
+}
+
+// Generic records
+public record Pair&lt;T, U&gt;(T first, U second) {
+    public static &lt;T, U&gt; Pair&lt;T, U&gt; of(T first, U second) {
+        return new Pair&lt;&gt;(first, second);
+    }
+}
+
+// Usage
+var person = Person.of("John Doe", 25);
+var coordinates = Pair.of(10.5, 20.3);
+var keyValue = Pair.of("key", 42);</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <h3 class="feature-title">Structured Concurrency</h3>
+                    <span class="version-badge">Java 19+ (Preview), Java 21+ (Preview)</span>
+                </div>
+                <div class="feature-content">
+                    <p class="feature-description">A new approach to concurrent programming that treats groups of related tasks as a single unit.</p>
+                    <div class="single-example">
+                        <div class="code-header">Structured Concurrency Example</div>
+                        <pre><code>// Structured concurrency with StructuredTaskScope
+public class WeatherService {
+    
+    public Weather getWeather(String location) throws Exception {
+        try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
+            
+            // Launch concurrent tasks
+            Supplier&lt;String&gt; temperature = scope.fork(() -> getTemperature(location));
+            Supplier&lt;String&gt; humidity = scope.fork(() -> getHumidity(location));
+            Supplier&lt;String&gt; windSpeed = scope.fork(() -> getWindSpeed(location));
+            
+            // Wait for all tasks to complete or any to fail
+            scope.join()           // Wait for all subtasks
+                 .throwIfFailed(); // Propagate any exception
+            
+            // All tasks succeeded, combine results
+            return new Weather(
+                temperature.get(),
+                humidity.get(), 
+                windSpeed.get()
+            );
+        }
+    }
+    
+    private String getTemperature(String location) {
+        // Simulate API call
+        try { Thread.sleep(100); } catch (InterruptedException e) {}
+        return "25°C";
+    }
+    
+    private String getHumidity(String location) {
+        // Simulate API call
+        try { Thread.sleep(150); } catch (InterruptedException e) {}
+        return "60%";
+    }
+    
+    private String getWindSpeed(String location) {
+        // Simulate API call
+        try { Thread.sleep(120); } catch (InterruptedException e) {}
+        return "10 km/h";
+    }
+}
+
+record Weather(String temperature, String humidity, String windSpeed) {}</code></pre>
+                    </div>
+                    <div class="tip">
+                        <strong>Key Benefit:</strong> If any task fails, all related tasks are automatically cancelled, preventing resource leaks.
                     </div>
                 </div>
             </div>

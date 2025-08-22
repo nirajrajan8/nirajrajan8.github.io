@@ -437,20 +437,167 @@ WebDriver driver = new ChromeDriver(service);</code></pre>
                     <span class="version-badge">Selenium 4+</span>
                 </div>
                 <div class="feature-content">
-                    <p class="feature-description">The core `By` class and the different strategies for finding elements.</p>
+                    <p class="feature-description">Locators are the foundation of Selenium automation. They define strategies to find web elements on a page. Choosing the right locator strategy is crucial for creating reliable, maintainable tests.</p>
+                    
                     <div class="single-example">
-                        <div class="code-header">Common Locators</div>
-                        <pre><code>// Finding by ID
+                        <div class="code-header">Locator Priority & Best Practices</div>
+                        <pre><code>// LOCATOR PRIORITY (Most to Least Reliable):
+// 1. ID - Fastest and most reliable (if unique)
+// 2. Name - Good for form elements
+// 3. CSS Selector - Powerful and flexible
+// 4. XPath - Most powerful but slowest
+// 5. LinkText/PartialLinkText - For links only
+// 6. ClassName - Often not unique
+// 7. TagName - Too generic, rarely used
+
+// Example HTML for demonstration:
+// &lt;input id="username" name="user" class="form-input" type="text" data-testid="username-field"&gt;
+// &lt;button class="btn btn-primary" data-qa="login-btn"&gt;Login&lt;/button&gt;
+// &lt;a href="/dashboard" class="nav-link"&gt;Go to Dashboard&lt;/a&gt;</code></pre>
+                    </div>
+
+                    <div class="single-example">
+                        <div class="code-header">All Locator Types with Examples</div>
+                        <pre><code>// 1. BY ID - Most preferred (fast and unique)
 WebElement usernameInput = driver.findElement(By.id("username"));
 
-// Finding by CSS Selector
-WebElement loginButton = driver.findElement(By.cssSelector("button.login"));
+// 2. BY NAME - Good for form elements
+WebElement userField = driver.findElement(By.name("user"));
 
-// Finding by XPath
-WebElement title = driver.findElement(By.xpath("//h1[@class='main-title']"));
+// 3. BY CSS SELECTOR - Powerful and flexible
+WebElement loginButton = driver.findElement(By.cssSelector("button.btn-primary"));
+WebElement inputByAttribute = driver.findElement(By.cssSelector("input[data-testid='username-field']"));
+WebElement nestedElement = driver.findElement(By.cssSelector("form .form-input"));
 
-// Finding multiple elements
-List&lt;WebElement&gt; links = driver.findElements(By.tagName("a"));</code></pre>
+// 4. BY XPATH - Most powerful but slower
+WebElement titleByText = driver.findElement(By.xpath("//h1[text()='Welcome']"));
+WebElement buttonByAttribute = driver.findElement(By.xpath("//button[@data-qa='login-btn']"));
+WebElement followingSibling = driver.findElement(By.xpath("//label[text()='Password']/following-sibling::input"));
+
+// 5. BY LINK TEXT - Exact match for link text
+WebElement dashboardLink = driver.findElement(By.linkText("Go to Dashboard"));
+
+// 6. BY PARTIAL LINK TEXT - Partial match for link text
+WebElement partialLink = driver.findElement(By.partialLinkText("Dashboard"));
+
+// 7. BY CLASS NAME - Single class only
+WebElement navLink = driver.findElement(By.className("nav-link"));
+
+// 8. BY TAG NAME - Usually for finding multiple elements
+List&lt;WebElement&gt; allLinks = driver.findElements(By.tagName("a"));
+List&lt;WebElement&gt; allInputs = driver.findElements(By.tagName("input"));</code></pre>
+                    </div>
+
+                    <div class="single-example">
+                        <div class="code-header">Advanced CSS Selector Patterns</div>
+                        <pre><code>// Attribute selectors
+driver.findElement(By.cssSelector("input[type='email']"));              // Exact match
+driver.findElement(By.cssSelector("input[placeholder*='Enter']"));      // Contains
+driver.findElement(By.cssSelector("input[id^='user']"));                // Starts with
+driver.findElement(By.cssSelector("input[id$='name']"));                // Ends with
+
+// Pseudo-selectors
+driver.findElement(By.cssSelector("tr:nth-child(2)"));                  // Second row
+driver.findElement(By.cssSelector("tr:nth-last-child(1)"));             // Last row
+driver.findElement(By.cssSelector("input:not([disabled])"));            // Not disabled
+driver.findElement(By.cssSelector("option:checked"));                   // Selected option
+
+// Combinators
+driver.findElement(By.cssSelector("div > button"));                     // Direct child
+driver.findElement(By.cssSelector("form button"));                      // Descendant
+driver.findElement(By.cssSelector("label + input"));                    // Adjacent sibling
+driver.findElement(By.cssSelector("h2 ~ p"));                          // General sibling
+
+// Complex selectors
+driver.findElement(By.cssSelector("table tr:nth-child(odd) td:first-child"));
+driver.findElement(By.cssSelector("form input[required]:not([readonly])"));</code></pre>
+                    </div>
+
+                    <div class="single-example">
+                        <div class="code-header">Advanced XPath Patterns</div>
+                        <pre><code>// Text-based selection
+driver.findElement(By.xpath("//button[text()='Submit']"));              // Exact text
+driver.findElement(By.xpath("//button[contains(text(),'Submit')]"));    // Contains text
+driver.findElement(By.xpath("//button[normalize-space()='Submit']"));   // Normalized text
+
+// Attribute conditions
+driver.findElement(By.xpath("//input[@type='text' and @required]"));    // Multiple conditions
+driver.findElement(By.xpath("//div[@class and contains(@class,'error')]")); // Has class attribute
+
+// Axes navigation
+driver.findElement(By.xpath("//label[text()='Email']/following-sibling::input"));    // Next sibling
+driver.findElement(By.xpath("//input[@id='username']/ancestor::form"));              // Ancestor
+driver.findElement(By.xpath("//tr[1]/descendant::button"));                          // Descendant
+driver.findElement(By.xpath("//button/preceding-sibling::input[1]"));                // Previous sibling
+
+// Position-based selection
+driver.findElement(By.xpath("(//button)[1]"));                          // First button
+driver.findElement(By.xpath("(//button)[last()]"));                     // Last button
+driver.findElement(By.xpath("//tr[position() > 1]"));                   // All except first row
+
+// Dynamic elements
+driver.findElement(By.xpath("//div[starts-with(@id,'dynamic-')]"));     // Dynamic ID
+driver.findElement(By.xpath("//span[string-length(text()) > 10]"));     // Text length condition</code></pre>
+                    </div>
+
+                    <div class="single-example">
+                        <div class="code-header">Robust Locator Strategies</div>
+                        <pre><code>// Page Object Model with fallback locators
+public class LoginPage {
+    private WebDriver driver;
+    
+    // Primary and fallback locators
+    private By usernameField = By.id("username");
+    private By usernameFallback = By.name("user");
+    private By usernameLastResort = By.cssSelector("input[type='text']:first-of-type");
+    
+    public WebElement getUsernameField() {
+        try {
+            return driver.findElement(usernameField);
+        } catch (NoSuchElementException e1) {
+            try {
+                return driver.findElement(usernameFallback);
+            } catch (NoSuchElementException e2) {
+                return driver.findElement(usernameLastResort);
+            }
+        }
+    }
+    
+    // Using data attributes for stable locators
+    public WebElement getLoginButton() {
+        // Prefer data attributes for test automation
+        return driver.findElement(By.cssSelector("[data-testid='login-button']"));
+    }
+    
+    // Dynamic element handling
+    public WebElement getErrorMessage() {
+        // Handle dynamic error messages
+        return driver.findElement(By.xpath("//div[contains(@class,'error') and not(contains(@class,'hidden'))]"));
+    }
+    
+    // Table cell selection
+    public WebElement getTableCell(int row, int column) {
+        String xpath = String.format("//table//tr[%d]//td[%d]", row, column);
+        return driver.findElement(By.xpath(xpath));
+    }
+    
+    // Finding by visible text in any element
+    public WebElement findByVisibleText(String text) {
+        String xpath = String.format("//*[normalize-space(text())='%s' and not(ancestor::*[contains(@style,'display:none') or contains(@style,'visibility:hidden')])]", text);
+        return driver.findElement(By.xpath(xpath));
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="tip">
+                        <strong>Locator Best Practices:</strong>
+                        <ul>
+                            <li><strong>Prefer ID and Name:</strong> Fastest performance and most reliable</li>
+                            <li><strong>Use Data Attributes:</strong> data-testid, data-qa for test-specific identification</li>
+                            <li><strong>Avoid Brittle Selectors:</strong> Don't use absolute XPath or position-dependent selectors</li>
+                            <li><strong>CSS over XPath:</strong> CSS selectors are generally faster than XPath</li>
+                        </ul>
+                        <strong>Common Pitfalls:</strong> Using auto-generated IDs, relying on text that changes, overly complex selectors, and not handling dynamic content.
                     </div>
                 </div>
             </div>
@@ -461,23 +608,214 @@ List&lt;WebElement&gt; links = driver.findElements(By.tagName("a"));</code></pre
                     <span class="version-badge">Selenium 4+</span>
                 </div>
                 <div class="feature-content">
-                    <p class="feature-description">Basic methods to interact with web elements: click, sendKeys, clear.</p>
+                    <p class="feature-description">WebElement provides various methods to interact with page elements. Understanding these methods and when to use them is essential for creating robust automation scripts.</p>
+                    
                     <div class="single-example">
-                        <div class="code-header">Basic Actions</div>
-                        <pre><code>// Clicks on an element
-loginButton.click();
+                        <div class="code-header">Core Interaction Methods</div>
+                        <pre><code>WebElement usernameInput = driver.findElement(By.id("username"));
+WebElement loginButton = driver.findElement(By.id("login-btn"));
+WebElement dropdown = driver.findElement(By.id("country-select"));
 
-// Types text into an input field
-usernameInput.sendKeys("my_user");
+// CLICK - Most common interaction
+loginButton.click();                                    // Standard click
 
-// Clears the text from an input field
-usernameInput.clear();
+// SEND KEYS - Text input and keyboard actions
+usernameInput.sendKeys("testuser@example.com");        // Type text
+usernameInput.sendKeys(Keys.CONTROL + "a");           // Select all text
+usernameInput.sendKeys(Keys.CONTROL + "c");           // Copy text
+usernameInput.sendKeys(Keys.TAB);                     // Tab to next field
 
-// Gets text from an element
-String buttonText = loginButton.getText();
+// CLEAR - Remove existing text
+usernameInput.clear();                                 // Clear input field
+usernameInput.clear();                                 // Then type new text
+usernameInput.sendKeys("newuser@example.com");
 
-// Gets an attribute value
-String href = links.get(0).getAttribute("href");</code></pre>
+// TEXT RETRIEVAL
+String buttonText = loginButton.getText();            // Visible text
+String inputValue = usernameInput.getAttribute("value"); // Input value
+String placeholder = usernameInput.getAttribute("placeholder"); // Placeholder text
+
+// ATTRIBUTE ACCESS
+String href = linkElement.getAttribute("href");        // Link URL
+String className = element.getAttribute("class");      // CSS classes
+String dataId = element.getAttribute("data-testid");   // Data attributes</code></pre>
+                    </div>
+
+                    <div class="single-example">
+                        <div class="code-header">Element State Checking</div>
+                        <pre><code>WebElement submitButton = driver.findElement(By.id("submit"));
+WebElement checkbox = driver.findElement(By.id("terms"));
+WebElement hiddenField = driver.findElement(By.id("hidden-input"));
+
+// VISIBILITY CHECKS
+boolean isDisplayed = submitButton.isDisplayed();      // Is element visible?
+boolean isEnabled = submitButton.isEnabled();          // Is element clickable?
+boolean isSelected = checkbox.isSelected();            // Is checkbox/radio selected?
+
+// COMPREHENSIVE ELEMENT VALIDATION
+public boolean isElementReady(WebElement element) {
+    try {
+        return element.isDisplayed() && element.isEnabled();
+    } catch (NoSuchElementException | StaleElementReferenceException e) {
+        return false;
+    }
+}
+
+// CONDITIONAL INTERACTIONS
+if (checkbox.isDisplayed() && !checkbox.isSelected()) {
+    checkbox.click();                                   // Only click if visible and not selected
+}
+
+if (submitButton.isEnabled()) {
+    submitButton.click();                               // Only click if enabled
+} else {
+    throw new IllegalStateException("Submit button is disabled");
+}
+
+// ELEMENT PROPERTIES
+Dimension size = element.getSize();                     // Width and height
+Point location = element.getLocation();                 // X, Y coordinates
+Rectangle rect = element.getRect();                     // Combined size and location
+String tagName = element.getTagName();                  // HTML tag name
+String cssValue = element.getCssValue("color");         // CSS property value</code></pre>
+                    </div>
+
+                    <div class="single-example">
+                        <div class="code-header">Advanced Input Techniques</div>
+                        <pre><code>// FILE UPLOAD
+WebElement fileUpload = driver.findElement(By.id("file-input"));
+String filePath = System.getProperty("user.dir") + "/test-files/document.pdf";
+fileUpload.sendKeys(filePath);                          // Upload file
+
+// MULTI-LINE TEXT INPUT
+WebElement textArea = driver.findElement(By.id("description"));
+String multiLineText = "Line 1\nLine 2\nLine 3";
+textArea.sendKeys(multiLineText);
+
+// SPECIAL KEY COMBINATIONS
+WebElement searchBox = driver.findElement(By.id("search"));
+searchBox.sendKeys("selenium automation");
+searchBox.sendKeys(Keys.ENTER);                         // Submit search
+
+// Copy-paste operations
+searchBox.sendKeys(Keys.CONTROL + "a");                 // Select all
+searchBox.sendKeys(Keys.CONTROL + "c");                 // Copy
+WebElement anotherField = driver.findElement(By.id("another-input"));
+anotherField.sendKeys(Keys.CONTROL + "v");              // Paste
+
+// CLEARING DIFFERENT INPUT TYPES
+// Standard text input
+textInput.clear();
+textInput.sendKeys("new text");
+
+// Rich text editor (may need special handling)
+richTextEditor.click();
+richTextEditor.sendKeys(Keys.CONTROL + "a");            // Select all
+richTextEditor.sendKeys(Keys.DELETE);                   // Delete content
+richTextEditor.sendKeys("new content");
+
+// Date input
+dateInput.clear();
+dateInput.sendKeys("01/15/2024");
+dateInput.sendKeys(Keys.TAB);                           // Trigger date validation</code></pre>
+                    </div>
+
+                    <div class="single-example">
+                        <div class="code-header">Robust Element Interaction Patterns</div>
+                        <pre><code>// SAFE CLICK WITH RETRY
+public void safeClick(WebElement element, int maxRetries) {
+    for (int i = 0; i < maxRetries; i++) {
+        try {
+            if (element.isDisplayed() && element.isEnabled()) {
+                element.click();
+                return;
+            }
+        } catch (ElementClickInterceptedException e) {
+            // Scroll element into view and retry
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
+            try { Thread.sleep(500); } catch (InterruptedException ie) {}
+        } catch (StaleElementReferenceException e) {
+            // Re-find element and retry
+            element = driver.findElement(getLocatorFor(element));
+        }
+    }
+    throw new RuntimeException("Failed to click element after " + maxRetries + " attempts");
+}
+
+// SMART TEXT INPUT WITH VALIDATION
+public void enterText(WebElement inputField, String text) {
+    inputField.clear();
+    inputField.sendKeys(text);
+    
+    // Verify text was entered correctly
+    String actualValue = inputField.getAttribute("value");
+    if (!text.equals(actualValue)) {
+        // Retry with character-by-character input
+        inputField.clear();
+        for (char c : text.toCharArray()) {
+            inputField.sendKeys(String.valueOf(c));
+            try { Thread.sleep(50); } catch (InterruptedException e) {}
+        }
+    }
+}
+
+// DROPDOWN SELECTION HELPER
+public void selectDropdownOption(WebElement dropdown, String optionText) {
+    Select select = new Select(dropdown);
+    
+    // Try different selection methods
+    try {
+        select.selectByVisibleText(optionText);
+    } catch (NoSuchElementException e) {
+        try {
+            select.selectByValue(optionText);
+        } catch (NoSuchElementException e2) {
+            // Find option by partial text match
+            List&lt;WebElement&gt; options = select.getOptions();
+            for (WebElement option : options) {
+                if (option.getText().contains(optionText)) {
+                    option.click();
+                    return;
+                }
+            }
+            throw new NoSuchElementException("Option not found: " + optionText);
+        }
+    }
+}
+
+// CHECKBOX/RADIO BUTTON STATE MANAGEMENT
+public void setCheckboxState(WebElement checkbox, boolean shouldBeChecked) {
+    boolean isCurrentlyChecked = checkbox.isSelected();
+    if (isCurrentlyChecked != shouldBeChecked) {
+        checkbox.click();
+    }
+}
+
+// FORM FILLING HELPER
+public void fillForm(Map&lt;String, String&gt; formData) {
+    for (Map.Entry&lt;String, String&gt; entry : formData.entrySet()) {
+        WebElement field = driver.findElement(By.name(entry.getKey()));
+        
+        if (field.getTagName().equalsIgnoreCase("select")) {
+            selectDropdownOption(field, entry.getValue());
+        } else if (field.getAttribute("type").equals("checkbox")) {
+            setCheckboxState(field, Boolean.parseBoolean(entry.getValue()));
+        } else {
+            enterText(field, entry.getValue());
+        }
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="tip">
+                        <strong>Interaction Best Practices:</strong>
+                        <ul>
+                            <li><strong>Always Check State:</strong> Verify element is displayed and enabled before interaction</li>
+                            <li><strong>Handle Exceptions:</strong> Catch StaleElementReferenceException and ElementClickInterceptedException</li>
+                            <li><strong>Validate Results:</strong> Confirm actions had the expected effect</li>
+                            <li><strong>Use Appropriate Methods:</strong> Select class for dropdowns, Actions for complex interactions</li>
+                        </ul>
+                        <strong>Common Issues:</strong> Element not in viewport, overlapping elements, dynamic content loading, and stale element references.
                     </div>
                 </div>
             </div>
